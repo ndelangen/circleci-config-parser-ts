@@ -64,7 +64,7 @@ describe('Use an OrbImport within a config', () => {
     });
   });
 
-  it.only('OrbImport should have static properties', () => {
+  it('OrbImport should have static properties', () => {
     expect(exampleOrb.generableType).toBe(
       CircleCI.mapping.GenerableEnum.ORB_IMPORT
     );
