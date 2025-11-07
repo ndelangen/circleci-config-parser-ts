@@ -1,12 +1,7 @@
 # CircleCI Config Parser
 
-A parsing library for CircleCI configuration files, powered by the
-[CircleCI Config SDK](https://github.com/CircleCI-Public/circleci-config-sdk-ts)
-
-> Used by the
-> [CircleCI Visual Config Editor](https://github.com/CircleCI-Public/visual-config-editor)
-> to generate an interactive and editable visual representation of your CircleCI
-> config.
+A parsing library for CircleCI configuration files, powered by the (forked)
+[CircleCI Config SDK](https://github.com/ndelangen/circleci-config-sdk-ts)
 
 ## Getting Started
 
@@ -16,34 +11,22 @@ A parsing library for CircleCI configuration files, powered by the
 
 Using npm:
 
-```shell
-$ npm i @circleci/circleci-config-parser
-```
-
-Using yarn:
-
-```shell
-$ yarn add @circleci/circleci-config-parser
+```sh
+$ npm i @ndelangen/circleci-config-parser
 ```
 
 #### Usage
 
 In Node.js:
 
-```typescript
-import ConfigParser from '@circleci/circleci-config-parser';
-```
-
-In Browser:
-
-```javascript
-const ConfigParser = require('@circleci/circleci-config-parser');
+```ts
+import ConfigParser from '@ndelangen/circleci-config-parser';
 ```
 
 Loading a Config instance from a config file
 
-```typescript
-import fs from 'fs';
+```ts
+import fs from 'node:fs';
 
 const configSrc = fs.readFileSync('./config.yml', 'utf8');
 const config = ConfigParser.parseConfig(configSrc);
@@ -52,7 +35,7 @@ const config = ConfigParser.parseConfig(configSrc);
 Parsing a job config equivalent object, into a CircleCI Config SDK `Job`
 instance.
 
-```typescript
+```ts
 const jobIn = {
   docker: [{ image: 'cimg/base:2022.08' }],
   resource_class: 'medium',
@@ -76,7 +59,7 @@ ConfigParser.parseJob('Job Name', jobIn);
 
 The equivalent config-sdk instantiation for that object:
 
-```typescript
+```ts
 new CircleCI.reusable.ParameterizedJob(
   'my_job',
   new CircleCI.executors.DockerExecutor('cimg/node:lts'),
@@ -94,8 +77,8 @@ new CircleCI.reusable.ParameterizedJob(
 Parsing Orb references requires an OrbManifest, which is a representation of
 Orbs outward facing properties.
 
-```typescript
-import fs from 'fs';
+```ts
+import fs from 'node:fs';
 
 const customOrbProps = {
   // component type
