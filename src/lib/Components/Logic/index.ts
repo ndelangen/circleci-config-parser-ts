@@ -1,12 +1,12 @@
-import { logic, mapping } from '@circleci/circleci-config-sdk';
-import { errorParsing, parseGenerable } from '../../Config/exports/Parsing';
+import { logic, mapping } from "@ndelangen/circleci-config-sdk";
+import { errorParsing, parseGenerable } from "../../Config/exports/Parsing";
 
 type ConditionSubtypeMap = {
   [key: string]: {
-    generableType: mapping.GenerableType;
+    GenerableEnum: mapping.GenerableEnum;
     parse: (
       _: unknown,
-      deps: { children: unknown },
+      deps: { children: unknown }
     ) => logic.conditional.Condition;
   };
 };
@@ -19,25 +19,25 @@ const conditionParsers: ConditionSubtypeMap = {
     parse: (_, { children }) => {
       return new logic.conditional.And(children as ConditionOrValue[]);
     },
-    generableType: mapping.GenerableType.AND,
+    GenerableEnum: mapping.GenerableEnum.AND,
   },
   or: {
     parse: (_, { children }) => {
       return new logic.conditional.Or(children as ConditionOrValue[]);
     },
-    generableType: mapping.GenerableType.OR,
+    GenerableEnum: mapping.GenerableEnum.OR,
   },
   equal: {
     parse: (_, { children }) => {
       return new logic.conditional.Equal(children as TruthyValue[]);
     },
-    generableType: mapping.GenerableType.EQUAL,
+    GenerableEnum: mapping.GenerableEnum.EQUAL,
   },
   not: {
     parse: (_, { children }) => {
       return new logic.conditional.Not(children as ConditionOrValue);
     },
-    generableType: mapping.GenerableType.NOT,
+    GenerableEnum: mapping.GenerableEnum.NOT,
   },
 };
 
@@ -49,7 +49,7 @@ const conditionParsers: ConditionSubtypeMap = {
  */
 export function parseCondition(
   type: keyof typeof conditionParsers,
-  conditionIn: unknown,
+  conditionIn: unknown
 ): logic.conditional.Condition {
   const parser = conditionParsers[type];
 
@@ -62,10 +62,10 @@ export function parseCondition(
         | logic.conditional.Condition
         | unknown;
     }
-  >(parser.generableType, conditionIn, parser.parse, (condition) => {
+  >(parser.GenerableEnum, conditionIn, parser.parse, (condition) => {
     const isArray = Array.isArray(condition);
 
-    if (type === 'equal') {
+    if (type === "equal") {
       const values = isArray ? condition : [condition];
 
       return { children: values };
@@ -85,7 +85,7 @@ export function parseCondition(
  * @returns Condition
  */
 export function parseLogic(logicIn: unknown): logic.conditional.Condition {
-  if (typeof logicIn === 'object') {
+  if (typeof logicIn === "object") {
     const condition = logicIn as Record<string, unknown>;
     const name = Object.keys(condition)[0];
 
@@ -97,10 +97,10 @@ export function parseLogic(logicIn: unknown): logic.conditional.Condition {
   }
 
   return parseGenerable<TruthyValue, logic.conditional.Truthy>(
-    mapping.GenerableType.TRUTHY,
+    mapping.GenerableEnum.TRUTHY,
     logicIn,
     (truthy) => {
       return new logic.conditional.Truthy(truthy);
-    },
+    }
   );
 }

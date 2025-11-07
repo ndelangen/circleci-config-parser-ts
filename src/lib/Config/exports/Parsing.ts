@@ -1,6 +1,6 @@
-import * as CircleCI from '@circleci/circleci-config-sdk';
-import { GenerableSubtypes, OneOrMoreGenerable } from '../types/Mapping.types';
-import { Validator } from './Validator';
+import * as CircleCI from "@ndelangen/circleci-config-sdk";
+import { GenerableSubtypes, OneOrMoreGenerable } from "../types/Mapping.types";
+import { Validator } from "./Validator";
 
 let logParsing = false;
 let parseStack: string[] = [];
@@ -11,22 +11,22 @@ export function parseGenerable<
   GenerableDependencies extends Record<
     string,
     OneOrMoreGenerable | unknown
-  > = never,
+  > = never
 >(
-  component: CircleCI.mapping.GenerableType,
+  component: CircleCI.mapping.GenerableEnum,
   input: unknown,
   parse: (
     args: InputShape,
-    children: GenerableDependencies,
+    children: GenerableDependencies
   ) => OutputGenerable | undefined,
   parseDependencies?: (args: InputShape) => GenerableDependencies,
   name?: string,
-  subtype?: GenerableSubtypes,
+  subtype?: GenerableSubtypes
 ): OutputGenerable {
-  parseStack.push(`${component}${name ? `:${name}` : ''}`);
+  parseStack.push(`${component}${name ? `:${name}` : ""}`);
 
   if (logParsing) {
-    console.log(`${parseStack.join('/')}`);
+    console.log(`${parseStack.join("/")}`);
   }
 
   const inputShape = input as InputShape;
@@ -38,7 +38,7 @@ export function parseGenerable<
     const valid = Validator.validateGenerable(
       component,
       input || null,
-      subtype,
+      subtype
     );
 
     if (valid !== true) {
@@ -60,7 +60,7 @@ export function parseGenerable<
 }
 
 export function errorParsing(message?: string): Error {
-  const stack = parseStack.join('/');
+  const stack = parseStack.join("/");
 
   parseStack = [];
 

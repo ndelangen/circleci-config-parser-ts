@@ -1,98 +1,99 @@
-import Ajv, { ErrorObject, SchemaObject } from 'ajv';
-import { ValidationMap, ValidationResult } from '../types/Validator.types';
+import Ajv, { ErrorObject, SchemaObject } from "ajv";
+import { ValidationMap, ValidationResult } from "../types/Validator.types";
 
-import { schemas } from '../../..';
-import { mapping, types } from '@circleci/circleci-config-sdk';
+import { schemas } from "../../..";
+import { mapping, types } from "@ndelangen/circleci-config-sdk";
 
 const schemaRegistry: ValidationMap = {
-  [mapping.GenerableType.ORB]: {},
-  [mapping.GenerableType.ORB_IMPORT]: {},
-  [mapping.GenerableType.ORB_REF]: {},
+  [mapping.GenerableEnum.ORB]: {},
+  [mapping.GenerableEnum.ORB_IMPORT]: {},
+  [mapping.GenerableEnum.ORB_REF]: {},
 
-  [mapping.GenerableType.CONFIG]: schemas.ConfigSchema,
-  [mapping.GenerableType.REUSABLE_COMMAND]:
+  [mapping.GenerableEnum.CONFIG]: schemas.ConfigSchema,
+  [mapping.GenerableEnum.REUSABLE_COMMAND]:
     schemas.command.reusable.ReusableCommandSchema,
-  [mapping.GenerableType.REUSED_COMMAND]:
+  [mapping.GenerableEnum.REUSED_COMMAND]:
     schemas.command.reusable.ReusedCommandSchema,
-  [mapping.GenerableType.RESTORE]: schemas.command.cache.RestoreSchema,
-  [mapping.GenerableType.SAVE]: schemas.command.cache.SaveSchema,
-  [mapping.GenerableType.ATTACH]:
+  [mapping.GenerableEnum.RESTORE]: schemas.command.cache.RestoreSchema,
+  [mapping.GenerableEnum.SAVE]: schemas.command.cache.SaveSchema,
+  [mapping.GenerableEnum.ATTACH]:
     schemas.command.workspace.AttachWorkspaceSchema,
-  [mapping.GenerableType.PERSIST]: schemas.command.workspace.PersistSchema,
-  [mapping.GenerableType.ADD_SSH_KEYS]: schemas.command.AddSSHKeysSchema,
-  [mapping.GenerableType.CHECKOUT]: schemas.command.CheckoutSchema,
-  [mapping.GenerableType.RUN]: schemas.command.RunSchema,
-  [mapping.GenerableType.SETUP_REMOTE_DOCKER]:
+  [mapping.GenerableEnum.PERSIST]: schemas.command.workspace.PersistSchema,
+  [mapping.GenerableEnum.ADD_SSH_KEYS]: schemas.command.AddSSHKeysSchema,
+  [mapping.GenerableEnum.CHECKOUT]: schemas.command.CheckoutSchema,
+  [mapping.GenerableEnum.RUN]: schemas.command.RunSchema,
+  [mapping.GenerableEnum.SETUP_REMOTE_DOCKER]:
     schemas.command.SetupRemoteDockerSchema,
-  [mapping.GenerableType.STORE_ARTIFACTS]: schemas.command.StoreArtifactsSchema,
-  [mapping.GenerableType.STORE_TEST_RESULTS]:
+  [mapping.GenerableEnum.STORE_ARTIFACTS]: schemas.command.StoreArtifactsSchema,
+  [mapping.GenerableEnum.STORE_TEST_RESULTS]:
     schemas.command.StoreTestResultsSchema,
 
-  [mapping.GenerableType.ANY_EXECUTOR]: schemas.executor.ExecutorSchema,
-  [mapping.GenerableType.DOCKER_EXECUTOR]:
+  [mapping.GenerableEnum.ANY_EXECUTOR]: schemas.executor.ExecutorSchema,
+  [mapping.GenerableEnum.DOCKER_EXECUTOR]:
     schemas.executor.DockerExecutableSchema,
-  [mapping.GenerableType.MACHINE_EXECUTOR]:
+  [mapping.GenerableEnum.MACHINE_EXECUTOR]:
     schemas.executor.MachineExecutableSchema,
-  [mapping.GenerableType.MACOS_EXECUTOR]:
+  [mapping.GenerableEnum.MACOS_EXECUTOR]:
     schemas.executor.MacOSExecutableSchema,
-  [mapping.GenerableType.WINDOWS_EXECUTOR]:
+  [mapping.GenerableEnum.WINDOWS_EXECUTOR]:
     schemas.executor.WindowsExecutableSchema,
-  [mapping.GenerableType.REUSABLE_EXECUTOR]:
+  [mapping.GenerableEnum.REUSABLE_EXECUTOR]:
     schemas.executor.reusable.ReusableExecutorSchema,
-  [mapping.GenerableType.REUSABLE_EXECUTOR_LIST]:
+  [mapping.GenerableEnum.REUSABLE_EXECUTOR_LIST]:
     schemas.executor.reusable.ReusableExecutorsListSchema,
-  [mapping.GenerableType.REUSED_EXECUTOR]:
+  [mapping.GenerableEnum.REUSED_EXECUTOR]:
     schemas.executor.reusable.ReusableExecutorUsageSchema,
 
-  [mapping.GenerableType.STEP]: schemas.command.steps.StepSchema,
-  [mapping.GenerableType.STEP_LIST]: schemas.command.steps.StepsSchema,
-  [mapping.GenerableType.JOB]: schemas.JobSchema,
-  [mapping.GenerableType.WORKFLOW_JOB]: schemas.workflow.WorkflowJobSchema,
-  [mapping.GenerableType.WORKFLOW]: schemas.workflow.WorkflowSchema,
+  [mapping.GenerableEnum.STEP]: schemas.command.steps.StepSchema,
+  [mapping.GenerableEnum.STEP_LIST]: schemas.command.steps.StepsSchema,
+  [mapping.GenerableEnum.JOB]: schemas.JobSchema,
+  [mapping.GenerableEnum.WORKFLOW_JOB]: schemas.workflow.WorkflowJobSchema,
+  [mapping.GenerableEnum.WORKFLOW]: schemas.workflow.WorkflowSchema,
 
-  [mapping.GenerableType.CUSTOM_PARAMETER]: {
+  [mapping.GenerableEnum.CUSTOM_PARAMETER]: {
     /* Custom Parameter Config Components */
-    [mapping.ParameterizedComponent.JOB]: schemas.parameter.JobParametersSchema,
-    [mapping.ParameterizedComponent.COMMAND]:
+    [mapping.ParameterizedComponentEnum.JOB]:
+      schemas.parameter.JobParametersSchema,
+    [mapping.ParameterizedComponentEnum.COMMAND]:
       schemas.parameter.CommandParametersSchema,
-    [mapping.ParameterizedComponent.EXECUTOR]:
+    [mapping.ParameterizedComponentEnum.EXECUTOR]:
       schemas.parameter.ExecutorParametersSchema,
-    [mapping.ParameterizedComponent.PIPELINE]:
+    [mapping.ParameterizedComponentEnum.PIPELINE]:
       schemas.parameter.PipelineParametersSchema,
     /** Custom Parameter Generics */
-    [mapping.ParameterSubtype.STRING]:
+    [mapping.ParameterSubEnum.STRING]:
       schemas.parameter.types.StringParameterSchema,
-    [mapping.ParameterSubtype.BOOLEAN]:
+    [mapping.ParameterSubEnum.BOOLEAN]:
       schemas.parameter.types.BooleanParameterSchema,
-    [mapping.ParameterSubtype.INTEGER]:
+    [mapping.ParameterSubEnum.INTEGER]:
       schemas.parameter.types.IntegerParameterSchema,
-    [mapping.ParameterSubtype.EXECUTOR]:
+    [mapping.ParameterSubEnum.EXECUTOR]:
       schemas.parameter.types.ExecutorParameterSchema,
-    [mapping.ParameterSubtype.STEPS]:
+    [mapping.ParameterSubEnum.STEPS]:
       schemas.parameter.types.StepsParameterSchema,
-    [mapping.ParameterSubtype.ENV_VAR_NAME]:
+    [mapping.ParameterSubEnum.ENV_VAR_NAME]:
       schemas.parameter.types.EnvVarNameParameterSchema,
   },
-  [mapping.GenerableType.CUSTOM_ENUM_PARAMETER]:
+  [mapping.GenerableEnum.CUSTOM_ENUM_PARAMETER]:
     schemas.parameter.types.EnumParameterSchema,
-  [mapping.GenerableType.CUSTOM_PARAMETERS_LIST]: {
-    [mapping.ParameterizedComponent.JOB]:
+  [mapping.GenerableEnum.CUSTOM_PARAMETERS_LIST]: {
+    [mapping.ParameterizedComponentEnum.JOB]:
       schemas.parameter.lists.JobParameterListSchema,
-    [mapping.ParameterizedComponent.COMMAND]:
+    [mapping.ParameterizedComponentEnum.COMMAND]:
       schemas.parameter.lists.CommandParameterListSchema,
-    [mapping.ParameterizedComponent.EXECUTOR]:
+    [mapping.ParameterizedComponentEnum.EXECUTOR]:
       schemas.parameter.lists.ExecutorParameterListSchema,
-    [mapping.ParameterizedComponent.PIPELINE]:
+    [mapping.ParameterizedComponentEnum.PIPELINE]:
       schemas.parameter.lists.PipelineParameterListSchema,
   },
 
-  [mapping.GenerableType.WHEN]: schemas.logic.ConditionsSchema,
-  [mapping.GenerableType.AND]: schemas.logic.AndConditionSchema,
-  [mapping.GenerableType.NOT]: schemas.logic.NotConditionSchema,
-  [mapping.GenerableType.OR]: schemas.logic.OrConditionSchema,
-  [mapping.GenerableType.EQUAL]: schemas.logic.EqualConditionSchema,
-  [mapping.GenerableType.TRUTHY]: schemas.logic.TruthyConditionSchema,
-  [mapping.GenerableType.PARAMETER_REFERENCE]: {},
+  [mapping.GenerableEnum.WHEN]: schemas.logic.ConditionsSchema,
+  [mapping.GenerableEnum.AND]: schemas.logic.AndConditionSchema,
+  [mapping.GenerableEnum.NOT]: schemas.logic.NotConditionSchema,
+  [mapping.GenerableEnum.OR]: schemas.logic.OrConditionSchema,
+  [mapping.GenerableEnum.EQUAL]: schemas.logic.EqualConditionSchema,
+  [mapping.GenerableEnum.TRUTHY]: schemas.logic.TruthyConditionSchema,
+  [mapping.GenerableEnum.PARAMETER_REFERENCE]: {},
 };
 
 /**
@@ -108,7 +109,7 @@ export class Validator extends Ajv {
     super({ allowUnionTypes: true, strict: false });
 
     Object.values(schemaRegistry).forEach((source) => {
-      if ('$id' in source) {
+      if ("$id" in source) {
         const schema = source as SchemaObject;
         this.addSchema(schema, schema.$id);
       } else {
@@ -141,13 +142,13 @@ export class Validator extends Ajv {
    * @returns
    */
   static validateGenerable(
-    generable: mapping.GenerableType,
+    generable: mapping.GenerableEnum,
     input: unknown,
-    subtype?: types.config.mapping.GenerableSubtypes,
+    subtype?: types.config.mapping.GenerableSubtypes
   ): ValidationResult {
     const schemaSource = schemaRegistry[generable];
 
-    if ('$id' in schemaSource) {
+    if ("$id" in schemaSource) {
       const schema = schemaSource as SchemaObject;
 
       return Validator.getInstance().validateComponent(schema, input || null);

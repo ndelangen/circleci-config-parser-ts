@@ -1,13 +1,13 @@
-import * as CircleCI from '@circleci/circleci-config-sdk';
-import { parseReusableCommands } from '../Components/Commands';
-import { parseReusableExecutors } from '../Components/Executors';
-import { parseJobList } from '../Components/Job';
-import { parseParameterList } from '../Components/Parameters';
-import { parseWorkflowList } from '../Components/Workflow';
-import { parseGenerable } from './exports/Parsing';
-import { ConfigDependencies, UnknownConfigShape } from './types';
-import { parse } from 'yaml';
-import { parseOrbImports } from '../Orb';
+import * as CircleCI from "@ndelangen/circleci-config-sdk";
+import { parseReusableCommands } from "../Components/Commands";
+import { parseReusableExecutors } from "../Components/Executors";
+import { parseJobList } from "../Components/Job";
+import { parseParameterList } from "../Components/Parameters";
+import { parseWorkflowList } from "../Components/Workflow";
+import { parseGenerable } from "./exports/Parsing";
+import { ConfigDependencies, UnknownConfigShape } from "./types";
+import { parse } from "yaml";
+import { parseOrbImports } from "../Orb";
 
 /**
  * Parse a whole CircleCI config into a Config instance.
@@ -18,10 +18,10 @@ import { parseOrbImports } from '../Orb';
  */
 export function parseConfig(
   configIn: unknown,
-  orbImportManifests?: Record<string, CircleCI.types.orb.OrbImportManifest>,
+  orbImportManifests?: Record<string, CircleCI.types.orb.OrbImportManifest>
 ): CircleCI.Config {
   const configProps = (
-    typeof configIn == 'string' ? parse(configIn) : configIn
+    typeof configIn == "string" ? parse(configIn) : configIn
   ) as UnknownConfigShape;
 
   return parseGenerable<
@@ -29,7 +29,7 @@ export function parseConfig(
     CircleCI.Config,
     ConfigDependencies
   >(
-    CircleCI.mapping.GenerableType.CONFIG,
+    CircleCI.mapping.GenerableEnum.CONFIG,
     configProps,
     (
       config,
@@ -40,7 +40,7 @@ export function parseConfig(
         commandList,
         parameterList,
         orbImportList,
-      },
+      }
     ) => {
       return new CircleCI.Config(
         config.setup,
@@ -49,7 +49,7 @@ export function parseConfig(
         executorList as CircleCI.reusable.ReusableExecutor[] | undefined,
         commandList as CircleCI.reusable.ReusableCommand[] | undefined,
         parameterList as CircleCI.parameters.CustomParametersList<CircleCI.types.parameter.literals.PipelineParameterLiteral>,
-        orbImportList,
+        orbImportList
       );
     },
     (config) => {
@@ -66,12 +66,12 @@ export function parseConfig(
         config.jobs,
         commandList,
         executorList,
-        orbImportList,
+        orbImportList
       );
       const workflows = parseWorkflowList(
         config.workflows,
         jobList,
-        orbImportList,
+        orbImportList
       );
 
       return {
@@ -82,6 +82,6 @@ export function parseConfig(
         parameterList,
         orbImportList,
       };
-    },
+    }
   );
 }

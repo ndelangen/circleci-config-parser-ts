@@ -5,11 +5,11 @@ import {
   parameters,
   reusable,
   types,
-} from '@circleci/circleci-config-sdk';
-import { DockerImageShape } from '@circleci/circleci-config-sdk/dist/src/lib/Components/Executors/exports/DockerImage';
-import { errorParsing, parseGenerable } from '../../Config/exports/Parsing';
-import { parseOrbRef } from '../../Orb';
-import { parseParameterList } from '../Parameters';
+} from "@ndelangen/circleci-config-sdk";
+import { DockerImageShape } from "@ndelangen/circleci-config-sdk/dist/src/lib/Components/Executors/exports/DockerImage";
+import { errorParsing, parseGenerable } from "../../Config/exports/Parsing";
+import { parseOrbRef } from "../../Orb";
+import { parseParameterList } from "../Parameters";
 
 export type UnknownParameterized = {
   parameters?: {
@@ -27,8 +27,8 @@ export type ReusableExecutorDependencies = {
 };
 
 export type ExecutorSubtypeMap = {
-  [key in types.executors.executor.ExecutorUsageLiteral | 'windows']: {
-    generableType: mapping.GenerableType;
+  [key in types.executors.executor.ExecutorUsageLiteral | "windows"]: {
+    GenerableEnum: mapping.GenerableEnum;
     parse: ExecutorSubtypeParser;
   };
 };
@@ -42,12 +42,12 @@ export type ExecutorSubtypeParser = (
   args: unknown,
   resourceClass: types.executors.executor.AnyResourceClass,
   reusableExecutors?: reusable.ReusableExecutor[],
-  orb?: orb.OrbImport[],
+  orb?: orb.OrbImport[]
 ) => types.job.AnyExecutor;
 
 const subtypeParsers: ExecutorSubtypeMap = {
   docker: {
-    generableType: mapping.GenerableType.DOCKER_EXECUTOR,
+    GenerableEnum: mapping.GenerableEnum.DOCKER_EXECUTOR,
     parse: (args, resourceClass) => {
       const dockerArgs = args as [DockerImageShape];
       const [mainImage, ...serviceImages] = dockerArgs;
@@ -56,57 +56,57 @@ const subtypeParsers: ExecutorSubtypeMap = {
       return new executors.DockerExecutor(
         image,
         resourceClass as types.executors.docker.DockerResourceClass,
-        properties as Exclude<DockerImageShape, 'image'>,
-        serviceImages,
+        properties as Exclude<DockerImageShape, "image">,
+        serviceImages
       );
     },
   },
   machine: {
-    generableType: mapping.GenerableType.MACHINE_EXECUTOR,
+    GenerableEnum: mapping.GenerableEnum.MACHINE_EXECUTOR,
     parse: (args, resourceClass) => {
       const machineArgs = args as Partial<executors.MachineExecutor>;
 
       return new executors.MachineExecutor(
         resourceClass as types.executors.machine.MachineResourceClass,
-        machineArgs.image,
+        machineArgs.image
       );
     },
   },
   windows: {
-    generableType: mapping.GenerableType.WINDOWS_EXECUTOR,
+    GenerableEnum: mapping.GenerableEnum.WINDOWS_EXECUTOR,
     parse: (args, resourceClass) => {
       const machineArgs = args as Partial<executors.WindowsExecutor>;
 
       return new executors.WindowsExecutor(
         resourceClass as types.executors.windows.WindowsResourceClass,
-        machineArgs.image,
+        machineArgs.image
       );
     },
   },
   macos: {
-    generableType: mapping.GenerableType.MACOS_EXECUTOR,
+    GenerableEnum: mapping.GenerableEnum.MACOS_EXECUTOR,
     parse: (args, resourceClass) => {
       const macOSArgs = args as { xcode: string };
 
       return new executors.MacOSExecutor(
         macOSArgs.xcode,
-        resourceClass as types.executors.macos.MacOSResourceClass,
+        resourceClass as types.executors.macos.MacOSResourceClass
       );
     },
   },
   // Parses a reusable executor by it's name
   executor: {
-    generableType: mapping.GenerableType.REUSED_EXECUTOR,
+    GenerableEnum: mapping.GenerableEnum.REUSED_EXECUTOR,
     parse: (args, _, reusableExecutors, orbs) => {
       const executorArgs = args as
         | { name: string; [key: string]: unknown }
         | string;
 
-      const isFlat = typeof executorArgs === 'string';
+      const isFlat = typeof executorArgs === "string";
       const name = isFlat ? executorArgs : executorArgs.name;
 
       const executor = reusableExecutors?.find(
-        (executor) => executor.name === name,
+        (executor) => executor.name === name
       );
 
       type ParameterParsingResult =
@@ -131,13 +131,13 @@ const subtypeParsers: ExecutorSubtypeMap = {
         const orbImport =
           parseOrbRef<types.parameter.literals.ExecutorParameterLiteral>(
             { [name]: parameters },
-            'executors',
-            orbs,
+            "executors",
+            orbs
           );
 
         if (!orbImport) {
           throw errorParsing(
-            `Reusable executor ${name} not found in config or any orb`,
+            `Reusable executor ${name} not found in config or any orb`
           );
         }
 
@@ -153,9 +153,9 @@ const subtypeParsers: ExecutorSubtypeMap = {
  * Helper function to extract ExecutableProperties from an executable.
  */
 export function extractExecutableProps(
-  executable: UnknownExecutableShape,
+  executable: UnknownExecutableShape
 ): types.executors.executor.ExecutableProperties {
-  const keys = ['shell', 'working_directory', 'environment'];
+  const keys = ["shell", "working_directory", "environment"];
   let notNull = false;
   const values = Object.assign(
     {},
@@ -167,7 +167,7 @@ export function extractExecutableProps(
       }
 
       return { [key]: value };
-    }),
+    })
   );
 
   return notNull ? values : undefined;
@@ -183,26 +183,26 @@ export function extractExecutableProps(
 export function parseExecutor(
   executableIn: unknown,
   reusableExecutors?: reusable.ReusableExecutor[],
-  orbs?: orb.OrbImport[],
+  orbs?: orb.OrbImport[]
 ): types.job.AnyExecutor {
   const executableArgs = executableIn as UnknownExecutableShape;
   let resourceClass = executableArgs.resource_class;
   let executorType:
     | types.executors.executor.ExecutorUsageLiteral
-    | 'windows'
+    | "windows"
     | undefined;
   let executorKey: types.executors.executor.ExecutorUsageLiteral | undefined;
-  const winPrefix = 'windows.';
+  const winPrefix = "windows.";
 
   if (resourceClass?.startsWith(winPrefix)) {
     resourceClass = resourceClass.substring(
-      winPrefix.length,
+      winPrefix.length
     ) as types.executors.windows.WindowsResourceClass;
-    executorType = 'windows';
-    executorKey = 'machine';
+    executorType = "windows";
+    executorKey = "machine";
   } else {
     executorKey = Object.keys(executableArgs).find(
-      (subtype) => subtype in subtypeParsers,
+      (subtype) => subtype in subtypeParsers
     ) as types.executors.executor.ExecutorLiteral | undefined;
   }
 
@@ -210,19 +210,19 @@ export function parseExecutor(
     throw errorParsing(`No executor found.`);
   }
 
-  const { generableType, parse } = subtypeParsers[executorType || executorKey];
+  const { GenerableEnum, parse } = subtypeParsers[executorType || executorKey];
 
   return parseGenerable<UnknownExecutableShape, types.job.AnyExecutor>(
-    generableType,
+    GenerableEnum,
     executableArgs,
     (args) => {
       return parse(
         args[executorKey as types.executors.executor.ExecutorUsageLiteral],
         resourceClass,
         reusableExecutors,
-        orbs,
+        orbs
       );
-    },
+    }
   );
 }
 /**
@@ -232,12 +232,12 @@ export function parseExecutor(
  * @throws Error if a reusable executor is not able to be parsed.
  */
 export function parseReusableExecutors(
-  executorListIn: unknown,
+  executorListIn: unknown
 ): reusable.ReusableExecutor[] {
   const executorListArgs = executorListIn as ReusableExecutorDefinition[];
 
   const parsedList = Object.entries(executorListArgs).map(([name, executor]) =>
-    parseReusableExecutor(name, executor),
+    parseReusableExecutor(name, executor)
   );
 
   return parsedList;
@@ -245,14 +245,14 @@ export function parseReusableExecutors(
 
 export function parseReusableExecutor(
   name: string,
-  executableIn: unknown,
+  executableIn: unknown
 ): reusable.ReusableExecutor {
   return parseGenerable<
     ReusableExecutorDefinition,
     reusable.ReusableExecutor,
     types.executors.reusable.ReusableExecutorDependencies
   >(
-    mapping.GenerableType.REUSABLE_EXECUTOR,
+    mapping.GenerableEnum.REUSABLE_EXECUTOR,
     executableIn,
     (_, { parametersList, executor }) => {
       return new reusable.ReusableExecutor(name, executor, parametersList);
@@ -262,14 +262,14 @@ export function parseReusableExecutor(
         parameters &&
         (parseParameterList(
           parameters,
-          mapping.ParameterizedComponent.EXECUTOR,
+          mapping.ParameterizedComponentEnum.EXECUTOR
         ) as
           | parameters.CustomParametersList<types.parameter.literals.ExecutorParameterLiteral>
           | undefined);
 
       const executor = parseExecutor(
         executorArgs,
-        undefined,
+        undefined
       ) as executors.Executor;
 
       return {
@@ -277,6 +277,6 @@ export function parseReusableExecutor(
         executor,
       };
     },
-    name,
+    name
   );
 }

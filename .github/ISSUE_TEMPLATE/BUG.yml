@@ -1,16 +1,16 @@
 name: "\U0001F41E  Bug Report"
 description: Report any identified bugs.
-title: 'Bug: '
+title: "Bug: "
 labels: [bug]
 # assignees: ''
 body:
   - type: checkboxes
     attributes:
       label: "Is there an existing issue for this?"
-      description: "Please search [here](https://github.com/CircleCI-Public/circleci-parser-sdk-ts/issues?q=is%3Aissue) to see if an issue already exists for the bug you encountered"
+      description: "Please search [here](https://github.com/CircleCI-Public/circleci-config-sdk-ts/issues?q=is%3Aissue) to see if an issue already exists for the bug you encountered"
       options:
-      - label: "I have searched the existing issues"
-        required: true
+        - label: "I have searched the existing issues"
+          required: true
 
   - type: textarea
     validations:
@@ -52,9 +52,9 @@ body:
 
   - type: input
     attributes:
-      label: "CircleCI Config Parser version"
+      label: "CircleCI Config SDK version"
       description: |
-        Which version of `@circleci/circleci-parser-sdk` are you using?
+        Which version of `@ndelangen/circleci-config-sdk` are you using?
       placeholder: "0.4.0"
 
   - type: input

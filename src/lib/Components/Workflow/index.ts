@@ -1,7 +1,7 @@
-import * as CircleCI from '@circleci/circleci-config-sdk';
-import { parseGenerable, errorParsing } from '../../Config/exports/Parsing';
-import { parseOrbRef } from '../../Orb';
-import { parseSteps } from '../Commands';
+import * as CircleCI from "@ndelangen/circleci-config-sdk";
+import { parseGenerable, errorParsing } from "../../Config/exports/Parsing";
+import { parseOrbRef } from "../../Orb";
+import { parseSteps } from "../Commands";
 
 export type UnknownWorkflowShape = {
   jobs: {
@@ -16,10 +16,10 @@ export type UnknownWorkflowJobShape = {
     [key: string]: unknown;
   };
   matrix?: { parameters: Record<string, string[]> };
-  'pre-steps'?: unknown[];
-  'post-steps'?: unknown[];
+  "pre-steps"?: unknown[];
+  "post-steps"?: unknown[];
   name?: string;
-  type?: 'approval';
+  type?: "approval";
 };
 
 /**
@@ -35,29 +35,29 @@ export function parseWorkflowJob(
   name: string,
   workflowJobIn: unknown,
   jobs: CircleCI.Job[],
-  orbs?: CircleCI.orb.OrbImport[],
+  orbs?: CircleCI.orb.OrbImport[]
 ): CircleCI.workflow.WorkflowJobAbstract {
   return parseGenerable<
     UnknownWorkflowJobShape,
     CircleCI.workflow.WorkflowJobAbstract
   >(
-    CircleCI.mapping.GenerableType.WORKFLOW_JOB,
+    CircleCI.mapping.GenerableEnum.WORKFLOW_JOB,
     workflowJobIn,
     (workflowJobArgs) => {
       let args = workflowJobArgs;
       let parsedPresteps, parsedPoststeps, matrix;
 
       if (args) {
-        if ('pre-steps' in args) {
-          const { 'pre-steps': steps, ...argsRestTemp } = args;
+        if ("pre-steps" in args) {
+          const { "pre-steps": steps, ...argsRestTemp } = args;
           parsedPresteps = steps
             ? parseSteps(steps, undefined, orbs)
             : undefined;
           args = argsRestTemp;
         }
 
-        if ('post-steps' in args) {
-          const { 'post-steps': steps, ...argsRestTemp } = args;
+        if ("post-steps" in args) {
+          const { "post-steps": steps, ...argsRestTemp } = args;
           parsedPoststeps = steps
             ? parseSteps(steps, undefined, orbs)
             : undefined;
@@ -65,7 +65,7 @@ export function parseWorkflowJob(
         }
 
         // we reduce matrix to be without the parameters key.
-        if ('matrix' in args) {
+        if ("matrix" in args) {
           const { matrix: tempMatrix, ...argsRestTemp } = args;
           matrix = tempMatrix?.parameters;
 
@@ -77,26 +77,26 @@ export function parseWorkflowJob(
         | CircleCI.types.workflow.WorkflowJobParameters
         | undefined;
 
-      if (workflowJobArgs?.type === 'approval') {
+      if (workflowJobArgs?.type === "approval") {
         return new CircleCI.workflow.WorkflowJobApproval(name, parameters);
       }
 
       const job =
-        parseOrbRef(name, 'jobs', orbs) || jobs.find((c) => c.name === name);
+        parseOrbRef(name, "jobs", orbs) || jobs.find((c) => c.name === name);
 
       if (job) {
         return new CircleCI.workflow.WorkflowJob(
           job,
           parameters,
           parsedPresteps,
-          parsedPoststeps,
+          parsedPoststeps
         );
       }
 
       throw errorParsing(`Job ${name} not found in config`);
     },
     undefined,
-    name,
+    name
   );
 }
 
@@ -112,19 +112,19 @@ export function parseWorkflow(
   name: string,
   workflowIn: unknown,
   jobs: CircleCI.Job[],
-  orbs?: CircleCI.orb.OrbImport[],
+  orbs?: CircleCI.orb.OrbImport[]
 ): CircleCI.Workflow {
   return parseGenerable<
     UnknownWorkflowShape,
     CircleCI.Workflow,
     CircleCI.types.workflow.WorkflowDependencies
   >(
-    CircleCI.mapping.GenerableType.WORKFLOW,
+    CircleCI.mapping.GenerableEnum.WORKFLOW,
     workflowIn,
     (_, { jobList }) => new CircleCI.Workflow(name, jobList),
     (workflowArgs) => {
       const jobList = workflowArgs.jobs.map((job) => {
-        if (typeof job === 'string') {
+        if (typeof job === "string") {
           return parseWorkflowJob(job, undefined, jobs, orbs);
         }
 
@@ -135,7 +135,7 @@ export function parseWorkflow(
 
       return { jobList };
     },
-    name,
+    name
   );
 }
 
@@ -149,12 +149,12 @@ export function parseWorkflow(
 export function parseWorkflowList(
   workflowsIn: unknown,
   jobs: CircleCI.Job[],
-  orbs?: CircleCI.orb.OrbImport[],
+  orbs?: CircleCI.orb.OrbImport[]
 ): CircleCI.Workflow[] {
   const workflowList = Object.entries(
     workflowsIn as {
       [name: string]: UnknownWorkflowShape;
-    },
+    }
   ).map(([name, workflow]) => parseWorkflow(name, workflow, jobs, orbs));
 
   return workflowList;
