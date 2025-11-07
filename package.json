@@ -2,14 +2,25 @@
   "name": "@ndelangen/circleci-config-parser",
   "version": "0.0.0",
   "description": "A parsing library for CircleCI configuration files, powered by the CircleCI Config SDK",
-  "directories": {
-    "lib": "lib"
+  "license": "ISC",
+  "author": {
+    "name": "CircleCI Community and Partner Engineering Team",
+    "email": "community-partner@circleci.com"
   },
   "type": "module",
   "exports": {
     ".": "./dist/index.mjs",
     "./package.json": "./package.json"
   },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "directories": {
+    "lib": "lib"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsdown",
     "changeset": "changeset",
@@ -19,22 +30,13 @@
     "release": "pnpm changeset publish",
     "test": "vitest"
   },
-  "author": {
-    "name": "CircleCI Community and Partner Engineering Team",
-    "email": "community-partner@circleci.com"
-  },
-  "license": "ISC",
   "dependencies": {
     "ajv": "^8.17.1"
   },
-  "peerDependencies": {
-    "yaml": "^2.8.1",
-    "@ndelangen/circleci-config-sdk": "*"
-  },
   "devDependencies": {
-    "@ndelangen/circleci-config-sdk": "https://pkg.pr.new/ndelangen/circleci-config-sdk-ts/@ndelangen/circleci-config-sdk@1",
     "@changesets/changelog-github": "^0.5.1",
     "@changesets/cli": "^2.29.6",
+    "@ndelangen/circleci-config-sdk": "https://pkg.pr.new/ndelangen/circleci-config-sdk-ts/@ndelangen/circleci-config-sdk@1",
     "@types/node": "^14.18.33",
     "@types/wicg-file-system-access": "^2020.9.5",
     "oxfmt": "^0.11.0",
@@ -45,8 +47,9 @@
     "typescript": "^5.9.3",
     "vitest": "^4.0.7"
   },
-  "packageManager": "pnpm@10.20.0+sha512.cf9998222162dd85864d0a8102e7892e7ba4ceadebbf5a31f9c2fce48dfce317a9c53b9f6464d1ef9042cba2e02ae02a9f7c143a2b438cd93c91840f0192b9dd",
-  "main": "./dist/index.mjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.mts"
+  "peerDependencies": {
+    "@ndelangen/circleci-config-sdk": "*",
+    "yaml": "^2.8.1"
+  },
+  "packageManager": "pnpm@10.20.0+sha512.cf9998222162dd85864d0a8102e7892e7ba4ceadebbf5a31f9c2fce48dfce317a9c53b9f6464d1ef9042cba2e02ae02a9f7c143a2b438cd93c91840f0192b9dd"
 }
