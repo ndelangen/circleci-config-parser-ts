@@ -5,11 +5,11 @@ import {
   parameters,
   reusable,
   types,
-} from "@ndelangen/circleci-config-sdk";
-import { DockerImageShape } from "@ndelangen/circleci-config-sdk/dist/src/lib/Components/Executors/exports/DockerImage";
-import { errorParsing, parseGenerable } from "../../Config/exports/Parsing";
-import { parseOrbRef } from "../../Orb";
-import { parseParameterList } from "../Parameters";
+} from '@ndelangen/circleci-config-sdk';
+import { DockerImageShape } from '@ndelangen/circleci-config-sdk/dist/src/lib/Components/Executors/exports/DockerImage';
+import { errorParsing, parseGenerable } from '../../Config/exports/Parsing';
+import { parseOrbRef } from '../../Orb';
+import { parseParameterList } from '../Parameters';
 
 export type UnknownParameterized = {
   parameters?: {
@@ -27,7 +27,7 @@ export type ReusableExecutorDependencies = {
 };
 
 export type ExecutorSubtypeMap = {
-  [key in types.executors.executor.ExecutorUsageLiteral | "windows"]: {
+  [key in types.executors.executor.ExecutorUsageLiteral | 'windows']: {
     GenerableEnum: mapping.GenerableEnum;
     parse: ExecutorSubtypeParser;
   };
@@ -56,7 +56,7 @@ const subtypeParsers: ExecutorSubtypeMap = {
       return new executors.DockerExecutor(
         image,
         resourceClass as types.executors.docker.DockerResourceClass,
-        properties as Exclude<DockerImageShape, "image">,
+        properties as Exclude<DockerImageShape, 'image'>,
         serviceImages
       );
     },
@@ -102,7 +102,7 @@ const subtypeParsers: ExecutorSubtypeMap = {
         | { name: string; [key: string]: unknown }
         | string;
 
-      const isFlat = typeof executorArgs === "string";
+      const isFlat = typeof executorArgs === 'string';
       const name = isFlat ? executorArgs : executorArgs.name;
 
       const executor = reusableExecutors?.find(
@@ -131,7 +131,7 @@ const subtypeParsers: ExecutorSubtypeMap = {
         const orbImport =
           parseOrbRef<types.parameter.literals.ExecutorParameterLiteral>(
             { [name]: parameters },
-            "executors",
+            'executors',
             orbs
           );
 
@@ -155,7 +155,7 @@ const subtypeParsers: ExecutorSubtypeMap = {
 export function extractExecutableProps(
   executable: UnknownExecutableShape
 ): types.executors.executor.ExecutableProperties {
-  const keys = ["shell", "working_directory", "environment"];
+  const keys = ['shell', 'working_directory', 'environment'];
   let notNull = false;
   const values = Object.assign(
     {},
@@ -189,17 +189,17 @@ export function parseExecutor(
   let resourceClass = executableArgs.resource_class;
   let executorType:
     | types.executors.executor.ExecutorUsageLiteral
-    | "windows"
+    | 'windows'
     | undefined;
   let executorKey: types.executors.executor.ExecutorUsageLiteral | undefined;
-  const winPrefix = "windows.";
+  const winPrefix = 'windows.';
 
   if (resourceClass?.startsWith(winPrefix)) {
     resourceClass = resourceClass.substring(
       winPrefix.length
     ) as types.executors.windows.WindowsResourceClass;
-    executorType = "windows";
-    executorKey = "machine";
+    executorType = 'windows';
+    executorKey = 'machine';
   } else {
     executorKey = Object.keys(executableArgs).find(
       (subtype) => subtype in subtypeParsers

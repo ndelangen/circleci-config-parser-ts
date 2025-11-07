@@ -5,10 +5,10 @@ import {
   parameters,
   reusable,
   types,
-} from "@ndelangen/circleci-config-sdk";
-import { parseGenerable, errorParsing } from "../../Config/exports/Parsing";
-import { parseOrbRef } from "../../Orb";
-import { parseParameterList } from "../Parameters";
+} from '@ndelangen/circleci-config-sdk';
+import { parseGenerable, errorParsing } from '../../Config/exports/Parsing';
+import { parseOrbRef } from '../../Orb';
+import { parseParameterList } from '../Parameters';
 
 const nativeSubtypes: types.command.CommandSubtypeMap = {
   restore_cache: {
@@ -47,7 +47,7 @@ const nativeSubtypes: types.command.CommandSubtypeMap = {
   run: {
     generableType: mapping.GenerableEnum.RUN,
     parse: (args) => {
-      if (typeof args === "string") {
+      if (typeof args === 'string') {
         return new commands.Run({ command: args as string });
       }
 
@@ -97,7 +97,7 @@ export function parseSteps(
     (stepsListIn) => {
       return {
         steps: stepsListIn.map((subtype) => {
-          if (typeof subtype === "string") {
+          if (typeof subtype === 'string') {
             return parseStep(subtype, undefined, commands, orbs);
           }
 
@@ -144,8 +144,8 @@ export function parseStep(
       (parameterArgs) => {
         const command =
           parseOrbRef<types.parameter.literals.CommandParameterLiteral>(
-            typeof name === "string" ? name : { [name]: args },
-            "commands",
+            typeof name === 'string' ? name : { [name]: args },
+            'commands',
             orbs
           ) || commands?.find((c) => c.name === name);
 

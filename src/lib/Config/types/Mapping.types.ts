@@ -1,5 +1,5 @@
-import { SchemaObject } from "ajv";
-import * as CircleCI from "@ndelangen/circleci-config-sdk";
+import { SchemaObject } from 'ajv';
+import * as CircleCI from '@ndelangen/circleci-config-sdk';
 
 export type GenerableSubtypes =
   | CircleCI.mapping.ParameterSubtype

@@ -1,63 +1,63 @@
-import * as CircleCI from "@ndelangen/circleci-config-sdk";
-import * as ConfigParser from "../index";
-import { describe, it, expect } from "vitest";
+import * as CircleCI from '@ndelangen/circleci-config-sdk';
+import * as ConfigParser from '../index';
+import { describe, it, expect } from 'vitest';
 
-describe("Parse a Docker Job", () => {
-  const docker = new CircleCI.executors.DockerExecutor("cimg/node:lts");
+describe('Parse a Docker Job', () => {
+  const docker = new CircleCI.executors.DockerExecutor('cimg/node:lts');
   const helloWorld = new CircleCI.commands.Run({
-    command: "echo hello world",
+    command: 'echo hello world',
   });
-  const jobName = "my-job";
+  const jobName = 'my-job';
   const job = new CircleCI.Job(jobName, docker, [helloWorld]);
   const jobContents = {
-    docker: [{ image: "cimg/node:lts" }],
-    resource_class: "medium",
-    steps: [{ run: "echo hello world" }],
+    docker: [{ image: 'cimg/node:lts' }],
+    resource_class: 'medium',
+    steps: [{ run: 'echo hello world' }],
   };
 
-  it("Should match the expected output", () => {
+  it('Should match the expected output', () => {
     expect(ConfigParser.parseJob(jobName, jobContents)).toEqual(job);
   });
 });
 
-describe("Parse Parameterized Docker Job", () => {
+describe('Parse Parameterized Docker Job', () => {
   const job = new CircleCI.reusable.ParameterizedJob(
-    "my_job",
-    new CircleCI.executors.DockerExecutor("cimg/node:lts"),
+    'my_job',
+    new CircleCI.executors.DockerExecutor('cimg/node:lts'),
     new CircleCI.parameters.CustomParametersList([
-      new CircleCI.parameters.CustomParameter("greeting", "string"),
+      new CircleCI.parameters.CustomParameter('greeting', 'string'),
     ]),
     [
       new CircleCI.commands.Run({
-        command: "echo << parameters.greeting >>",
+        command: 'echo << parameters.greeting >>',
       }),
     ]
   );
 
   const jobIn = {
-    docker: [{ image: "cimg/node:lts" }],
-    resource_class: "medium",
+    docker: [{ image: 'cimg/node:lts' }],
+    resource_class: 'medium',
     steps: [
       {
         run: {
-          command: "echo << parameters.greeting >>",
+          command: 'echo << parameters.greeting >>',
         },
       },
     ],
     parameters: {
       greeting: {
-        type: "string",
+        type: 'string',
       },
     },
   };
 
-  it("Can validate the job with a custom command step", () => {
-    const result = ConfigParser.parseJob("my_job", jobIn);
+  it('Can validate the job with a custom command step', () => {
+    const result = ConfigParser.parseJob('my_job', jobIn);
 
     expect(result).toEqual(job);
   });
 
-  it("Can validate the job with a custom command step", () => {
+  it('Can validate the job with a custom command step', () => {
     const result = ConfigParser.Validator.validateGenerable(
       CircleCI.mapping.GenerableEnum.JOB,
       jobIn
@@ -79,14 +79,14 @@ describe("Parse Parameterized Docker Job", () => {
   //   expect(resultCommand).not.toEqual(true);
   // });
 });
-describe("Parse Docker Job With A Parameterized Custom Command", () => {
+describe('Parse Docker Job With A Parameterized Custom Command', () => {
   const jobIn = {
-    docker: [{ image: "cimg/node:lts" }],
-    resource_class: "medium",
+    docker: [{ image: 'cimg/node:lts' }],
+    resource_class: 'medium',
     steps: [
       {
         say_hello: {
-          greeting: "hello world",
+          greeting: 'hello world',
         },
       },
     ],
@@ -98,27 +98,27 @@ describe("Parse Docker Job With A Parameterized Custom Command", () => {
 
   //   expect(result).toEqual(true);
   // });
-  it("Can validate the job with a custom command step", () => {
-    const docker = new CircleCI.executors.DockerExecutor("cimg/node:lts");
+  it('Can validate the job with a custom command step', () => {
+    const docker = new CircleCI.executors.DockerExecutor('cimg/node:lts');
     const helloWorld = new CircleCI.commands.Run({
-      command: "echo << parameters.greeting >>",
+      command: 'echo << parameters.greeting >>',
     });
     const reusableCommand = new CircleCI.reusable.ReusableCommand(
-      "say_hello",
+      'say_hello',
       [helloWorld],
       new CircleCI.parameters.CustomParametersList([
-        new CircleCI.parameters.CustomParameter("greeting", "string"),
+        new CircleCI.parameters.CustomParameter('greeting', 'string'),
       ])
     );
-    const job = new CircleCI.Job("my_job", docker, [
+    const job = new CircleCI.Job('my_job', docker, [
       new CircleCI.reusable.ReusedCommand(reusableCommand, {
-        greeting: "hello world",
+        greeting: 'hello world',
       }),
     ]);
     const myConfig = new CircleCI.Config();
     myConfig.addJob(job);
     myConfig.addReusableCommand(reusableCommand);
-    const result = ConfigParser.parseJob("my_job", jobIn, myConfig.commands);
+    const result = ConfigParser.parseJob('my_job', jobIn, myConfig.commands);
 
     expect(result).toEqual(job);
   });

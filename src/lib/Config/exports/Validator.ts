@@ -1,8 +1,8 @@
-import Ajv, { ErrorObject, SchemaObject } from "ajv";
-import { ValidationMap, ValidationResult } from "../types/Validator.types";
+import Ajv, { ErrorObject, SchemaObject } from 'ajv';
+import { ValidationMap, ValidationResult } from '../types/Validator.types';
 
-import { schemas } from "../../..";
-import { mapping, types } from "@ndelangen/circleci-config-sdk";
+import { schemas } from '../../..';
+import { mapping, types } from '@ndelangen/circleci-config-sdk';
 
 const schemaRegistry: ValidationMap = {
   [mapping.GenerableEnum.ORB]: {},
@@ -109,7 +109,7 @@ export class Validator extends Ajv {
     super({ allowUnionTypes: true, strict: false });
 
     Object.values(schemaRegistry).forEach((source) => {
-      if ("$id" in source) {
+      if ('$id' in source) {
         const schema = source as SchemaObject;
         this.addSchema(schema, schema.$id);
       } else {
@@ -148,7 +148,7 @@ export class Validator extends Ajv {
   ): ValidationResult {
     const schemaSource = schemaRegistry[generable];
 
-    if ("$id" in schemaSource) {
+    if ('$id' in schemaSource) {
       const schema = schemaSource as SchemaObject;
 
       return Validator.getInstance().validateComponent(schema, input || null);

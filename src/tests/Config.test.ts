@@ -1,20 +1,20 @@
-import { parse } from "yaml";
-import * as CircleCI from "@ndelangen/circleci-config-sdk";
-import * as ConfigParser from "../index";
-import { parseGenerable, setLogParsing } from "../lib/Config/exports/Parsing";
-import { describe, it, expect } from "vitest";
+import { parse } from 'yaml';
+import * as CircleCI from '@ndelangen/circleci-config-sdk';
+import * as ConfigParser from '../index';
+import { parseGenerable, setLogParsing } from '../lib/Config/exports/Parsing';
+import { describe, it, expect } from 'vitest';
 
-describe("Parse a CircleCI Config", () => {
+describe('Parse a CircleCI Config', () => {
   const myConfig = new CircleCI.Config(true);
 
-  myConfig.defineParameter("greeting", "string", "hello world");
+  myConfig.defineParameter('greeting', 'string', 'hello world');
 
   const configResult = myConfig.generate();
-  it("Should produce a blank config with parameters", () => {
+  it('Should produce a blank config with parameters', () => {
     expect(ConfigParser.parseConfig(configResult)).toEqual(myConfig);
   });
 
-  it("Should be fully circular", () => {
+  it('Should be fully circular', () => {
     setLogParsing(true);
     expect(ConfigParser.parseConfig(parse(myConfig.stringify()))).toEqual(
       myConfig
@@ -22,11 +22,11 @@ describe("Parse a CircleCI Config", () => {
     setLogParsing(false);
   });
 
-  it("Should be fully circular and parsable as string", () => {
+  it('Should be fully circular and parsable as string', () => {
     expect(ConfigParser.parseConfig(myConfig.generate())).toEqual(myConfig);
   });
 
-  it("Should throw error when parsing returns undefined", () => {
+  it('Should throw error when parsing returns undefined', () => {
     expect(() => {
       parseGenerable(
         CircleCI.mapping.GenerableEnum.CONFIG,

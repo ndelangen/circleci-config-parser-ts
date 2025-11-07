@@ -1,9 +1,9 @@
-import * as CircleCI from "@ndelangen/circleci-config-sdk";
-import { parse as yamlParse } from "yaml";
-import * as ConfigParser from "../index";
-import { describe, it, expect } from "vitest";
+import * as CircleCI from '@ndelangen/circleci-config-sdk';
+import { parse as yamlParse } from 'yaml';
+import * as ConfigParser from '../index';
+import { describe, it, expect } from 'vitest';
 
-describe("Parse yaml pipeline parameters", () => {
+describe('Parse yaml pipeline parameters', () => {
   const parametersIn = yamlParse(`
     axis:
       type: enum
@@ -13,23 +13,19 @@ describe("Parse yaml pipeline parameters", () => {
       type: integer
       default: 90`);
 
-  const expectedParameters =
-    new CircleCI.parameters.CustomParametersList<CircleCI.types.parameter.literals.PipelineParameterLiteral>(
-      [
-        new CircleCI.parameters.CustomEnumParameter(
-          "axis",
-          ["x", "y", "z"],
-          "x"
-        ),
-        new CircleCI.parameters.CustomParameter(
-          "angle",
-          CircleCI.mapping.ParameterSubEnum.INTEGER,
-          90
-        ),
-      ]
-    );
+  const expectedParameters = new CircleCI.parameters
+    .CustomParametersList<CircleCI.types.parameter.literals.PipelineParameterLiteral>(
+    [
+      new CircleCI.parameters.CustomEnumParameter('axis', ['x', 'y', 'z'], 'x'),
+      new CircleCI.parameters.CustomParameter(
+        'angle',
+        CircleCI.mapping.ParameterSubEnum.INTEGER,
+        90
+      ),
+    ]
+  );
 
-  it("Should validate parameters", () => {
+  it('Should validate parameters', () => {
     const result = ConfigParser.Validator.validateGenerable(
       CircleCI.mapping.GenerableEnum.CUSTOM_PARAMETERS_LIST,
       parametersIn,
@@ -39,22 +35,22 @@ describe("Parse yaml pipeline parameters", () => {
     expect(result).toEqual(true);
   });
 
-  it("Should parse parameters", () => {
+  it('Should parse parameters', () => {
     expect(ConfigParser.parseParameterList(parametersIn)).toEqual(
       expectedParameters
     );
   });
 
-  it("Should throw error if no parameter list is found", () => {
+  it('Should throw error if no parameter list is found', () => {
     expect(() => {
       ConfigParser.parseParameterList(
         { invalid_parameter: {} },
         CircleCI.mapping.ParameterizedComponentEnum.JOB
       );
-    }).toThrowError("Could not find valid parameter list in provided object");
+    }).toThrowError('Could not find valid parameter list in provided object');
   });
 
-  it("Should validate integer parameters", () => {
+  it('Should validate integer parameters', () => {
     const parameterIn = yamlParse(`
     type: integer
     default: 2021`);
@@ -68,7 +64,7 @@ describe("Parse yaml pipeline parameters", () => {
     expect(result).toEqual(true);
   });
 
-  it("Should not validate float parameters", () => {
+  it('Should not validate float parameters', () => {
     const parameterIn = yamlParse(`
     type: integer
     default: 1.01`);
@@ -83,9 +79,9 @@ describe("Parse yaml pipeline parameters", () => {
   });
 });
 
-describe("Parse yaml integer parameters", () => {
-  const parameterName = "year";
-  const parameterType = "integer";
+describe('Parse yaml integer parameters', () => {
+  const parameterName = 'year';
+  const parameterType = 'integer';
   const parameterValue = 2021;
   const parameterIn = yamlParse(`
   type: ${parameterType}
@@ -111,30 +107,30 @@ describe("Parse yaml integer parameters", () => {
       expect(result).toEqual(true);
     })
   );
-  it("Should parse integer parameter", () => {
+  it('Should parse integer parameter', () => {
     expect(ConfigParser.parseParameter(parameterIn, parameterName)).toEqual(
       expectedParameter
     );
   });
 
-  it("Should parse integer parameter", () => {
+  it('Should parse integer parameter', () => {
     expect(() => {
-      ConfigParser.parseParameter({ type: "not_a_type" }, parameterName);
-    }).toThrowError("No validator found");
+      ConfigParser.parseParameter({ type: 'not_a_type' }, parameterName);
+    }).toThrowError('No validator found');
   });
 });
-describe("Parse parameter with an invalid type", () => {
-  it("Should parse integer parameter", () => {
+describe('Parse parameter with an invalid type', () => {
+  it('Should parse integer parameter', () => {
     expect(() => {
-      ConfigParser.parseParameter({}, "invalid_parameter");
-    }).toThrowError("Missing type property on parameter: invalid_parameter");
+      ConfigParser.parseParameter({}, 'invalid_parameter');
+    }).toThrowError('Missing type property on parameter: invalid_parameter');
   });
 });
 
-describe("Parse yaml string parameter and validate", () => {
-  const parameterName = "message";
-  const parameterType = "string";
-  const parameterValue = "hello world!";
+describe('Parse yaml string parameter and validate', () => {
+  const parameterName = 'message';
+  const parameterType = 'string';
+  const parameterValue = 'hello world!';
   const parameterIn = yamlParse(`
   type: ${parameterType}
   default: '${parameterValue}'`);
@@ -144,7 +140,7 @@ describe("Parse yaml string parameter and validate", () => {
     parameterValue
   );
 
-  it("Should validate string parameter", () => {
+  it('Should validate string parameter', () => {
     const result = ConfigParser.Validator.validateGenerable(
       CircleCI.mapping.GenerableEnum.CUSTOM_PARAMETER,
       parameterIn,
@@ -169,9 +165,9 @@ describe("Parse yaml string parameter and validate", () => {
   );
 });
 
-describe("Parse yaml boolean parameter and validate", () => {
-  const parameterName = "should_run";
-  const parameterType = "boolean";
+describe('Parse yaml boolean parameter and validate', () => {
+  const parameterName = 'should_run';
+  const parameterType = 'boolean';
   const parameterValue = false;
   const parameterIn = yamlParse(`
   type: ${parameterType}
@@ -206,13 +202,13 @@ describe("Parse yaml boolean parameter and validate", () => {
   });
 });
 
-describe("Parse yaml enum parameter and validate", () => {
-  const parameterName = "message";
-  const parameterValues = ["x", "y", "z"];
+describe('Parse yaml enum parameter and validate', () => {
+  const parameterName = 'message';
+  const parameterValues = ['x', 'y', 'z'];
   const parameterIn = yamlParse(`
   type: enum
   default: '${parameterValues[1]}'
-  enum: [${parameterValues.join(", ")}]`);
+  enum: [${parameterValues.join(', ')}]`);
   const expectedParameter = new CircleCI.parameters.CustomEnumParameter(
     parameterName,
     parameterValues,
@@ -251,10 +247,10 @@ describe("Parse yaml enum parameter and validate", () => {
   });
 });
 
-describe("Parse yaml env_var_name parameter and validate", () => {
-  const parameterName = "secret-key";
-  const parameterType = "env_var_name";
-  const parameterValue = "SECRET_KEY";
+describe('Parse yaml env_var_name parameter and validate', () => {
+  const parameterName = 'secret-key';
+  const parameterType = 'env_var_name';
+  const parameterValue = 'SECRET_KEY';
   const parameterIn = yamlParse(`
   type: ${parameterType}
   default: '${parameterValue}'`);
@@ -287,14 +283,14 @@ describe("Parse yaml env_var_name parameter and validate", () => {
   });
 });
 
-describe("Parse component parameters", () => {
+describe('Parse component parameters', () => {
   const parametersIn = {
-    "override-executor": {
-      type: "executor",
-      default: "my-executor",
+    'override-executor': {
+      type: 'executor',
+      default: 'my-executor',
     },
-    "extra-steps": {
-      type: "steps",
+    'extra-steps': {
+      type: 'steps',
       default: [
         {
           run: {
@@ -306,27 +302,27 @@ describe("Parse component parameters", () => {
   };
 
   const reusableExecutor = new CircleCI.reusable.ReusableExecutor(
-    "my-executor",
-    new CircleCI.executors.DockerExecutor("cimg/node:current")
+    'my-executor',
+    new CircleCI.executors.DockerExecutor('cimg/node:current')
   );
 
-  const expectedParameters =
-    new CircleCI.parameters.CustomParametersList<CircleCI.types.parameter.literals.JobParameterLiteral>(
-      [
-        new CircleCI.parameters.CustomParameter(
-          "override-executor",
-          CircleCI.mapping.ParameterSubEnum.EXECUTOR,
-          reusableExecutor.name
-        ),
-        new CircleCI.parameters.CustomParameter(
-          "extra-steps",
-          CircleCI.mapping.ParameterSubEnum.STEPS,
-          [new CircleCI.commands.Run({ command: 'echo "hello world"' })]
-        ),
-      ]
-    );
+  const expectedParameters = new CircleCI.parameters
+    .CustomParametersList<CircleCI.types.parameter.literals.JobParameterLiteral>(
+    [
+      new CircleCI.parameters.CustomParameter(
+        'override-executor',
+        CircleCI.mapping.ParameterSubEnum.EXECUTOR,
+        reusableExecutor.name
+      ),
+      new CircleCI.parameters.CustomParameter(
+        'extra-steps',
+        CircleCI.mapping.ParameterSubEnum.STEPS,
+        [new CircleCI.commands.Run({ command: 'echo "hello world"' })]
+      ),
+    ]
+  );
 
-  it("Should validate parameters", () => {
+  it('Should validate parameters', () => {
     const result = ConfigParser.Validator.validateGenerable(
       CircleCI.mapping.GenerableEnum.CUSTOM_PARAMETERS_LIST,
       parametersIn,
@@ -336,22 +332,22 @@ describe("Parse component parameters", () => {
     expect(result).toEqual(true);
   });
 
-  it("Should parse parameters", () => {
+  it('Should parse parameters', () => {
     expect(ConfigParser.parseParameterList(parametersIn)).toEqual(
       expectedParameters
     );
   });
 
-  it("Should throw error if no parameter list is found", () => {
+  it('Should throw error if no parameter list is found', () => {
     expect(() => {
       ConfigParser.parseParameterList(
         { invalid_parameter: {} },
         CircleCI.mapping.ParameterizedComponentEnum.JOB
       );
-    }).toThrowError("Could not find valid parameter list in provided object");
+    }).toThrowError('Could not find valid parameter list in provided object');
   });
 
-  it("Should validate integer parameters", () => {
+  it('Should validate integer parameters', () => {
     const parameterIn = yamlParse(`
     type: integer
     default: 2021`);
@@ -365,7 +361,7 @@ describe("Parse component parameters", () => {
     expect(result).toEqual(true);
   });
 
-  it("Should not validate float parameters", () => {
+  it('Should not validate float parameters', () => {
     const parameterIn = yamlParse(`
     type: integer
     default: 1.01`);

@@ -5,15 +5,15 @@ import {
   parameters,
   reusable,
   types,
-} from "@ndelangen/circleci-config-sdk";
-import { parseGenerable } from "../../Config/exports/Parsing";
-import { parseSteps } from "../Commands";
+} from '@ndelangen/circleci-config-sdk';
+import { parseGenerable } from '../../Config/exports/Parsing';
+import { parseSteps } from '../Commands';
 import {
   extractExecutableProps,
   parseExecutor,
   UnknownExecutableShape,
-} from "../Executors";
-import { parseParameterList } from "../Parameters";
+} from '../Executors';
+import { parseParameterList } from '../Parameters';
 
 /**
  * Parse a config's list of jobs into a list of Job instances.

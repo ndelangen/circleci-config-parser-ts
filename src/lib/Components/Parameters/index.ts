@@ -1,7 +1,7 @@
-import * as CircleCI from "@ndelangen/circleci-config-sdk";
-import { errorParsing, parseGenerable } from "../../Config/exports/Parsing";
-import { Validator } from "../../Config/exports/Validator";
-import { parseSteps } from "../Commands";
+import * as CircleCI from '@ndelangen/circleci-config-sdk';
+import { errorParsing, parseGenerable } from '../../Config/exports/Parsing';
+import { Validator } from '../../Config/exports/Validator';
+import { parseSteps } from '../Commands';
 
 const parameterMappings: {
   [key in Exclude<
@@ -31,9 +31,9 @@ export function parseParameter(
 ): CircleCI.parameters.CustomParameter<CircleCI.types.parameter.literals.AnyParameterLiteral> {
   let type = undefined;
 
-  if (customParamIn && typeof customParamIn === "object") {
+  if (customParamIn && typeof customParamIn === 'object') {
     const typeEntry = Object.entries(customParamIn).find(
-      ([key]) => key === "type"
+      ([key]) => key === 'type'
     );
 
     if (!typeEntry) {
@@ -43,7 +43,7 @@ export function parseParameter(
     }
   }
 
-  if (type === "enum") {
+  if (type === 'enum') {
     return parseGenerable<
       CircleCI.types.parameter.CustomEnumParameterContentsShape,
       CircleCI.parameters.CustomEnumParameter
@@ -72,7 +72,7 @@ export function parseParameter(
     (customParam) => {
       let defaultValue = customParam.default;
 
-      if (customParam.type === "steps" && defaultValue) {
+      if (customParam.type === 'steps' && defaultValue) {
         defaultValue = parseSteps(defaultValue);
       }
 
@@ -110,7 +110,7 @@ export function parseParameterList(
 
     if (valid !== true) {
       throw errorParsing(
-        "Could not find valid parameter list in provided object"
+        'Could not find valid parameter list in provided object'
       );
     }
   }

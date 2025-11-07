@@ -1,5 +1,5 @@
-import { logic, mapping } from "@ndelangen/circleci-config-sdk";
-import { errorParsing, parseGenerable } from "../../Config/exports/Parsing";
+import { logic, mapping } from '@ndelangen/circleci-config-sdk';
+import { errorParsing, parseGenerable } from '../../Config/exports/Parsing';
 
 type ConditionSubtypeMap = {
   [key: string]: {
@@ -65,7 +65,7 @@ export function parseCondition(
   >(parser.GenerableEnum, conditionIn, parser.parse, (condition) => {
     const isArray = Array.isArray(condition);
 
-    if (type === "equal") {
+    if (type === 'equal') {
       const values = isArray ? condition : [condition];
 
       return { children: values };
@@ -85,7 +85,7 @@ export function parseCondition(
  * @returns Condition
  */
 export function parseLogic(logicIn: unknown): logic.conditional.Condition {
-  if (typeof logicIn === "object") {
+  if (typeof logicIn === 'object') {
     const condition = logicIn as Record<string, unknown>;
     const name = Object.keys(condition)[0];
 

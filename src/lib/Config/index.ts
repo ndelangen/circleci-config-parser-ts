@@ -1,13 +1,13 @@
-import * as CircleCI from "@ndelangen/circleci-config-sdk";
-import { parseReusableCommands } from "../Components/Commands";
-import { parseReusableExecutors } from "../Components/Executors";
-import { parseJobList } from "../Components/Job";
-import { parseParameterList } from "../Components/Parameters";
-import { parseWorkflowList } from "../Components/Workflow";
-import { parseGenerable } from "./exports/Parsing";
-import { ConfigDependencies, UnknownConfigShape } from "./types";
-import { parse } from "yaml";
-import { parseOrbImports } from "../Orb";
+import * as CircleCI from '@ndelangen/circleci-config-sdk';
+import { parseReusableCommands } from '../Components/Commands';
+import { parseReusableExecutors } from '../Components/Executors';
+import { parseJobList } from '../Components/Job';
+import { parseParameterList } from '../Components/Parameters';
+import { parseWorkflowList } from '../Components/Workflow';
+import { parseGenerable } from './exports/Parsing';
+import { ConfigDependencies, UnknownConfigShape } from './types';
+import { parse } from 'yaml';
+import { parseOrbImports } from '../Orb';
 
 /**
  * Parse a whole CircleCI config into a Config instance.
@@ -21,7 +21,7 @@ export function parseConfig(
   orbImportManifests?: Record<string, CircleCI.types.orb.OrbImportManifest>
 ): CircleCI.Config {
   const configProps = (
-    typeof configIn == "string" ? parse(configIn) : configIn
+    typeof configIn == 'string' ? parse(configIn) : configIn
   ) as UnknownConfigShape;
 
   return parseGenerable<

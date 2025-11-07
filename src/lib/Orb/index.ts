@@ -3,12 +3,12 @@ import {
   orb,
   parameters,
   types,
-} from "@ndelangen/circleci-config-sdk";
-import { parseParameterList } from "../Components/Parameters";
+} from '@ndelangen/circleci-config-sdk';
+import { parseParameterList } from '../Components/Parameters';
 
 export const orbImportPattern: RegExp =
   /^(.*)\/(.*)@(([0-5])(\.[0-5])?(\.[0-5])?)$/;
-export const UNDEFINED_ORB: orb.OrbImport = new orb.OrbImport("", "", "", "");
+export const UNDEFINED_ORB: orb.OrbImport = new orb.OrbImport('', '', '', '');
 
 /**
  * Parses high level orb import definition
@@ -63,20 +63,20 @@ export function parseOrbImports(
 }
 
 export function parseOrbRef<
-  Literal extends types.parameter.literals.AnyParameterLiteral
+  Literal extends types.parameter.literals.AnyParameterLiteral,
 >(
   orbRefInput: Record<string, unknown> | string,
   refType: keyof types.orb.OrbImportManifest,
   orbs?: orb.OrbImport[]
 ): orb.OrbRef<Literal> | undefined {
-  const isFlat = typeof orbRefInput === "string";
+  const isFlat = typeof orbRefInput === 'string';
   const orbRef = isFlat ? orbRefInput : Object.keys(orbRefInput)[0];
 
-  if (!orbRef.includes("/")) {
+  if (!orbRef.includes('/')) {
     return undefined;
   }
 
-  const [orbAlias, name] = orbRef.split("/");
+  const [orbAlias, name] = orbRef.split('/');
   const orbImport = orbs?.find((orb) => orb.alias === orbAlias);
 
   if (orbImport && orbImport[refType]) {
@@ -91,7 +91,7 @@ export type UnknownImportManifest = {
 };
 
 export function parseManifestParameters<
-  Type extends types.parameter.literals.AnyParameterLiteral
+  Type extends types.parameter.literals.AnyParameterLiteral,
 >(
   input?: Record<string, unknown>,
   subtype?: mapping.ParameterizedComponentEnum
