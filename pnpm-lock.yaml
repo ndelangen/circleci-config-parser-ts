@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@ndelangen/circleci-config-sdk':
-        specifier: https://pkg.pr.new/ndelangen/circleci-config-sdk-ts/@ndelangen/circleci-config-sdk@1
-        version: https://pkg.pr.new/ndelangen/circleci-config-sdk-ts/@ndelangen/circleci-config-sdk@1
       ajv:
         specifier: ^8.17.1
         version: 8.17.1
@@ -24,6 +21,9 @@ importers:
       '@changesets/cli':
         specifier: ^2.29.6
         version: 2.29.7(@types/node@14.18.63)
+      '@ndelangen/circleci-config-sdk':
+        specifier: https://pkg.pr.new/ndelangen/circleci-config-sdk-ts/@ndelangen/circleci-config-sdk@1
+        version: https://pkg.pr.new/ndelangen/circleci-config-sdk-ts/@ndelangen/circleci-config-sdk@1
       '@types/node':
         specifier: ^14.18.33
         version: 14.18.63

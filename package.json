@@ -25,11 +25,14 @@
   },
   "license": "ISC",
   "dependencies": {
-    "@ndelangen/circleci-config-sdk": "https://pkg.pr.new/ndelangen/circleci-config-sdk-ts/@ndelangen/circleci-config-sdk@1",
-    "ajv": "^8.17.1",
-    "yaml": "^2.8.1"
+    "ajv": "^8.17.1"
+  },
+  "peerDependencies": {
+    "yaml": "^2.8.1",
+    "@ndelangen/circleci-config-sdk": "*"
   },
   "devDependencies": {
+    "@ndelangen/circleci-config-sdk": "https://pkg.pr.new/ndelangen/circleci-config-sdk-ts/@ndelangen/circleci-config-sdk@1",
     "@changesets/changelog-github": "^0.5.1",
     "@changesets/cli": "^2.29.6",
     "@types/node": "^14.18.33",
