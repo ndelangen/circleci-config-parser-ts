@@ -5,47 +5,47 @@ import {
   parameters,
   reusable,
   types,
-} from '@circleci/circleci-config-sdk';
+} from '@ndelangen/circleci-config-sdk';
 import { parseGenerable, errorParsing } from '../../Config/exports/Parsing';
 import { parseOrbRef } from '../../Orb';
 import { parseParameterList } from '../Parameters';
 
 const nativeSubtypes: types.command.CommandSubtypeMap = {
   restore_cache: {
-    generableType: mapping.GenerableType.RESTORE,
+    generableType: mapping.GenerableEnum.RESTORE,
     parse: (args) =>
       new commands.cache.Restore(args as commands.cache.RestoreCacheParameters),
   },
   save_cache: {
-    generableType: mapping.GenerableType.SAVE,
+    generableType: mapping.GenerableEnum.SAVE,
     parse: (args) =>
       new commands.cache.Save(args as commands.cache.SaveCacheParameters),
   },
   attach_workspace: {
-    generableType: mapping.GenerableType.ATTACH,
+    generableType: mapping.GenerableEnum.ATTACH,
     parse: (args) =>
       new commands.workspace.Attach(
-        args as commands.workspace.AttachParameters,
+        args as commands.workspace.AttachParameters
       ),
   },
   persist_to_workspace: {
-    generableType: mapping.GenerableType.PERSIST,
+    generableType: mapping.GenerableEnum.PERSIST,
     parse: (args) =>
       new commands.workspace.Persist(
-        args as commands.workspace.PersistParameters,
+        args as commands.workspace.PersistParameters
       ),
   },
   add_ssh_keys: {
-    generableType: mapping.GenerableType.ADD_SSH_KEYS,
+    generableType: mapping.GenerableEnum.ADD_SSH_KEYS,
     parse: (args) =>
       new commands.AddSSHKeys(args as commands.AddSSHKeysParameters),
   },
   checkout: {
-    generableType: mapping.GenerableType.CHECKOUT,
+    generableType: mapping.GenerableEnum.CHECKOUT,
     parse: (args) => new commands.Checkout(args as commands.CheckoutParameters),
   },
   run: {
-    generableType: mapping.GenerableType.RUN,
+    generableType: mapping.GenerableEnum.RUN,
     parse: (args) => {
       if (typeof args === 'string') {
         return new commands.Run({ command: args as string });
@@ -55,22 +55,22 @@ const nativeSubtypes: types.command.CommandSubtypeMap = {
     },
   },
   setup_remote_docker: {
-    generableType: mapping.GenerableType.SETUP_REMOTE_DOCKER,
+    generableType: mapping.GenerableEnum.SETUP_REMOTE_DOCKER,
     parse: (args) =>
       new commands.SetupRemoteDocker(
-        args as commands.SetupRemoteDockerParameters,
+        args as commands.SetupRemoteDockerParameters
       ),
   },
   store_artifacts: {
-    generableType: mapping.GenerableType.STORE_ARTIFACTS,
+    generableType: mapping.GenerableEnum.STORE_ARTIFACTS,
     parse: (args) =>
       new commands.StoreArtifacts(args as commands.StoreArtifactsParameters),
   },
   store_test_results: {
-    generableType: mapping.GenerableType.STORE_TEST_RESULTS,
+    generableType: mapping.GenerableEnum.STORE_TEST_RESULTS,
     parse: (args) =>
       new commands.StoreTestResults(
-        args as commands.StoreTestResultsParameters,
+        args as commands.StoreTestResultsParameters
       ),
   },
 };
@@ -84,14 +84,14 @@ const nativeSubtypes: types.command.CommandSubtypeMap = {
 export function parseSteps(
   stepsListIn: unknown,
   commands?: reusable.ReusableCommand[],
-  orbs?: orb.OrbImport[],
+  orbs?: orb.OrbImport[]
 ): types.command.Command[] {
   return parseGenerable<
     Record<string, unknown>[],
     types.command.Command[],
     { steps: types.command.Command[] }
   >(
-    mapping.GenerableType.STEP_LIST,
+    mapping.GenerableEnum.STEP_LIST,
     stepsListIn,
     (_, { steps }) => steps,
     (stepsListIn) => {
@@ -106,7 +106,7 @@ export function parseSteps(
           return parseStep(commandName, subtype[commandName], commands, orbs);
         }),
       };
-    },
+    }
   );
 }
 
@@ -122,7 +122,7 @@ export function parseStep(
   name: string,
   args?: unknown,
   commands?: reusable.ReusableCommand[],
-  orbs?: orb.OrbImport[],
+  orbs?: orb.OrbImport[]
 ): types.command.Command {
   if (name in nativeSubtypes) {
     const commandMapping =
@@ -139,29 +139,29 @@ export function parseStep(
       types.command.CommandParameters,
       reusable.ReusedCommand
     >(
-      mapping.GenerableType.REUSED_COMMAND,
+      mapping.GenerableEnum.REUSED_COMMAND,
       args ?? name,
       (parameterArgs) => {
         const command =
           parseOrbRef<types.parameter.literals.CommandParameterLiteral>(
             typeof name === 'string' ? name : { [name]: args },
             'commands',
-            orbs,
+            orbs
           ) || commands?.find((c) => c.name === name);
 
         if (!command) {
           throw errorParsing(
-            `Custom Command ${name} not found in command list.`,
+            `Custom Command ${name} not found in command list.`
           );
         }
 
         return new reusable.ReusedCommand(
           command,
-          args ? parameterArgs : undefined,
+          args ? parameterArgs : undefined
         );
       },
       undefined,
-      name,
+      name
     );
   }
 
@@ -176,7 +176,7 @@ export function parseStep(
  */
 export function parseReusableCommands(
   commandListIn: { [key: string]: unknown },
-  orbs?: orb.OrbImport[],
+  orbs?: orb.OrbImport[]
 ): reusable.ReusableCommand[] {
   const parsed: reusable.ReusableCommand[] = [];
 
@@ -200,21 +200,21 @@ export function parseReusableCommand(
   name: string,
   args: unknown,
   custom_commands?: reusable.ReusableCommand[],
-  orbs?: orb.OrbImport[],
+  orbs?: orb.OrbImport[]
 ): reusable.ReusableCommand {
   return parseGenerable<
     types.command.ReusableCommandBodyShape,
     reusable.ReusableCommand,
     types.command.ReusableCommandDependencies
   >(
-    mapping.GenerableType.REUSABLE_COMMAND,
+    mapping.GenerableEnum.REUSABLE_COMMAND,
     args,
     (commandArgs, { parametersList, steps }) => {
       return new reusable.ReusableCommand(
         name,
         steps,
         parametersList,
-        commandArgs.description,
+        commandArgs.description
       );
     },
     (commandArgs) => {
@@ -222,13 +222,13 @@ export function parseReusableCommand(
         commandArgs.parameters &&
         (parseParameterList(
           commandArgs.parameters,
-          mapping.ParameterizedComponent.COMMAND,
+          mapping.ParameterizedComponentEnum.COMMAND
         ) as parameters.CustomParametersList<types.parameter.literals.CommandParameterLiteral>);
 
       const steps = parseSteps(commandArgs.steps, custom_commands, orbs);
 
       return { parametersList, steps };
     },
-    name,
+    name
   );
 }

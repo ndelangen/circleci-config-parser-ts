@@ -1,4 +1,4 @@
-import * as CircleCI from '@circleci/circleci-config-sdk';
+import * as CircleCI from '@ndelangen/circleci-config-sdk';
 import { errorParsing, parseGenerable } from '../../Config/exports/Parsing';
 import { Validator } from '../../Config/exports/Validator';
 import { parseSteps } from '../Commands';
@@ -7,14 +7,14 @@ const parameterMappings: {
   [key in Exclude<
     CircleCI.types.parameter.literals.AnyParameterLiteral,
     CircleCI.types.parameter.literals.EnumParameterLiteral
-  >]: CircleCI.mapping.ParameterSubtype;
+  >]: CircleCI.mapping.ParameterSubEnum;
 } = {
-  string: CircleCI.mapping.ParameterSubtype.STRING,
-  boolean: CircleCI.mapping.ParameterSubtype.BOOLEAN,
-  integer: CircleCI.mapping.ParameterSubtype.INTEGER,
-  executor: CircleCI.mapping.ParameterSubtype.EXECUTOR,
-  steps: CircleCI.mapping.ParameterSubtype.STEPS,
-  env_var_name: CircleCI.mapping.ParameterSubtype.ENV_VAR_NAME,
+  string: CircleCI.mapping.ParameterSubEnum.STRING,
+  boolean: CircleCI.mapping.ParameterSubEnum.BOOLEAN,
+  integer: CircleCI.mapping.ParameterSubEnum.INTEGER,
+  executor: CircleCI.mapping.ParameterSubEnum.EXECUTOR,
+  steps: CircleCI.mapping.ParameterSubEnum.STEPS,
+  env_var_name: CircleCI.mapping.ParameterSubEnum.ENV_VAR_NAME,
 };
 
 /**
@@ -27,13 +27,13 @@ const parameterMappings: {
  */
 export function parseParameter(
   customParamIn: unknown,
-  name: string,
+  name: string
 ): CircleCI.parameters.CustomParameter<CircleCI.types.parameter.literals.AnyParameterLiteral> {
   let type = undefined;
 
   if (customParamIn && typeof customParamIn === 'object') {
     const typeEntry = Object.entries(customParamIn).find(
-      ([key]) => key === 'type',
+      ([key]) => key === 'type'
     );
 
     if (!typeEntry) {
@@ -48,18 +48,18 @@ export function parseParameter(
       CircleCI.types.parameter.CustomEnumParameterContentsShape,
       CircleCI.parameters.CustomEnumParameter
     >(
-      CircleCI.mapping.GenerableType.CUSTOM_ENUM_PARAMETER,
+      CircleCI.mapping.GenerableEnum.CUSTOM_ENUM_PARAMETER,
       customParamIn,
       (customEnumParam) => {
         return new CircleCI.parameters.CustomEnumParameter(
           name,
           customEnumParam.enum,
           customEnumParam.default,
-          customEnumParam.description,
+          customEnumParam.description
         );
       },
       undefined,
-      name,
+      name
     );
   }
 
@@ -67,7 +67,7 @@ export function parseParameter(
     CircleCI.types.parameter.CustomParameterContentsShape<CircleCI.types.parameter.literals.AnyParameterLiteral>,
     CircleCI.parameters.CustomParameter<CircleCI.types.parameter.literals.AnyParameterLiteral>
   >(
-    CircleCI.mapping.GenerableType.CUSTOM_PARAMETER,
+    CircleCI.mapping.GenerableEnum.CUSTOM_PARAMETER,
     customParamIn,
     (customParam) => {
       let defaultValue = customParam.default;
@@ -80,12 +80,12 @@ export function parseParameter(
         name,
         customParam.type,
         defaultValue,
-        customParam.description,
+        customParam.description
       );
     },
     undefined,
     name,
-    parameterMappings[type as unknown as keyof typeof parameterMappings],
+    parameterMappings[type as unknown as keyof typeof parameterMappings]
   );
 }
 
@@ -99,18 +99,18 @@ export function parseParameter(
  */
 export function parseParameterList(
   customParamListIn: unknown,
-  subtype?: CircleCI.mapping.ParameterizedComponent,
+  subtype?: CircleCI.mapping.ParameterizedComponentEnum
 ): CircleCI.parameters.CustomParametersList<CircleCI.types.parameter.literals.AnyParameterLiteral> {
   if (subtype) {
     const valid = Validator.validateGenerable(
-      CircleCI.mapping.GenerableType.CUSTOM_PARAMETERS_LIST,
+      CircleCI.mapping.GenerableEnum.CUSTOM_PARAMETERS_LIST,
       customParamListIn,
-      subtype,
+      subtype
     );
 
     if (valid !== true) {
       throw errorParsing(
-        'Could not find valid parameter list in provided object',
+        'Could not find valid parameter list in provided object'
       );
     }
   }
@@ -119,7 +119,7 @@ export function parseParameterList(
     customParamListIn as CircleCI.types.parameter.CustomParametersListShape;
   return new CircleCI.parameters.CustomParametersList(
     Object.entries(customParamList).map(([name, properties]) =>
-      parseParameter(properties, name),
-    ),
+      parseParameter(properties, name)
+    )
   );
 }

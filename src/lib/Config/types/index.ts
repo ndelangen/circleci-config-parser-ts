@@ -1,4 +1,4 @@
-import * as CircleCI from '@circleci/circleci-config-sdk';
+import * as CircleCI from '@ndelangen/circleci-config-sdk';
 import * as mapping from './Mapping.types';
 import * as validator from './Validator.types';
 

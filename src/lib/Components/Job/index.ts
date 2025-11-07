@@ -5,7 +5,7 @@ import {
   parameters,
   reusable,
   types,
-} from '@circleci/circleci-config-sdk';
+} from '@ndelangen/circleci-config-sdk';
 import { parseGenerable } from '../../Config/exports/Parsing';
 import { parseSteps } from '../Commands';
 import {
@@ -28,10 +28,10 @@ export function parseJobList(
   jobListIn: { [key: string]: unknown },
   ReusableCommands?: reusable.ReusableCommand[],
   reusableExecutors?: reusable.ReusableExecutor[],
-  orbs?: orb.OrbImport[],
+  orbs?: orb.OrbImport[]
 ): Job[] {
   return Object.entries(jobListIn).map(([name, args]) =>
-    parseJob(name, args, ReusableCommands, reusableExecutors, orbs),
+    parseJob(name, args, ReusableCommands, reusableExecutors, orbs)
   );
 }
 
@@ -51,10 +51,10 @@ export function parseJob(
   jobIn: unknown,
   ReusableCommands?: reusable.ReusableCommand[],
   reusableExecutors?: reusable.ReusableExecutor[],
-  orbs?: orb.OrbImport[],
+  orbs?: orb.OrbImport[]
 ): Job {
   return parseGenerable<UnknownJobShape, Job, types.job.JobDependencies>(
-    mapping.GenerableType.JOB,
+    mapping.GenerableEnum.JOB,
     jobIn,
     (jobIn, { executor, steps, parametersList }) => {
       const optionalProps = {
@@ -67,7 +67,7 @@ export function parseJob(
           name,
           executor,
           parametersList,
-          steps,
+          steps
         );
       }
 
@@ -82,13 +82,13 @@ export function parseJob(
       if (jobArgs.parameters) {
         parametersList = parseParameterList(
           jobArgs.parameters,
-          mapping.ParameterizedComponent.JOB,
+          mapping.ParameterizedComponentEnum.JOB
         ) as parameters.CustomParametersList<types.parameter.literals.JobParameterLiteral>;
       }
 
       return { executor, steps, parametersList };
     },
-    name,
+    name
   );
 }
 

@@ -1,5 +1,6 @@
-import * as CircleCI from '@circleci/circleci-config-sdk';
-import * as ConfigParser from '../src/index';
+import * as CircleCI from '@ndelangen/circleci-config-sdk';
+import * as ConfigParser from '../index';
+import { describe, it, expect } from 'vitest';
 
 describe('Parse a Workflow', () => {
   const docker = new CircleCI.executors.DockerExecutor('cimg/node:lts');
@@ -12,7 +13,7 @@ describe('Parse a Workflow', () => {
 
   it('Should parse and match raw example', () => {
     expect(
-      ConfigParser.parseWorkflow('my-workflow', { jobs: ['my-job'] }, [job]),
+      ConfigParser.parseWorkflow('my-workflow', { jobs: ['my-job'] }, [job])
     ).toEqual(myWorkflow);
   });
 });
@@ -31,9 +32,9 @@ describe('Parse a Workflow with a custom name', () => {
   it('Should validate', () => {
     expect(
       ConfigParser.Validator.validateGenerable(
-        CircleCI.mapping.GenerableType.WORKFLOW,
-        expected['my-workflow'],
-      ),
+        CircleCI.mapping.GenerableEnum.WORKFLOW,
+        expected['my-workflow']
+      )
     ).toEqual(true);
   });
 });
@@ -51,7 +52,7 @@ describe('Parse a Workflow with a job', () => {
   };
   it('Should match the expected output', () => {
     expect(ConfigParser.parseWorkflowList(workflowListShape, [job])[0]).toEqual(
-      myWorkflow,
+      myWorkflow
     );
   });
 
@@ -88,7 +89,7 @@ describe('Parse a Workflow with an approval job', () => {
       ConfigParser.parseWorkflow('my-workflow', workflowContents, [
         jobTest,
         jobDeploy,
-      ]),
+      ])
     ).toEqual(myWorkflow);
   });
 });

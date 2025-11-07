@@ -1,5 +1,6 @@
-import * as CircleCI from '@circleci/circleci-config-sdk';
-import * as ConfigParser from '../src/index';
+import * as CircleCI from '@ndelangen/circleci-config-sdk';
+import * as ConfigParser from '../index';
+import { describe, it, expect } from 'vitest';
 
 describe('Parse a Docker executor', () => {
   const docker = new CircleCI.executors.DockerExecutor('cimg/node:lts');
@@ -11,9 +12,9 @@ describe('Parse a Docker executor', () => {
   it('Should validate', () => {
     expect(
       ConfigParser.Validator.validateGenerable(
-        CircleCI.mapping.GenerableType.DOCKER_EXECUTOR,
-        expectedShape,
-      ),
+        CircleCI.mapping.GenerableEnum.DOCKER_EXECUTOR,
+        expectedShape
+      )
     ).toEqual(true);
   });
   it('Should parse', () => {
@@ -30,9 +31,9 @@ describe('Parse a Machine executor', () => {
   it('Should validate', () => {
     expect(
       ConfigParser.Validator.validateGenerable(
-        CircleCI.mapping.GenerableType.MACHINE_EXECUTOR,
-        expectedShape,
-      ),
+        CircleCI.mapping.GenerableEnum.MACHINE_EXECUTOR,
+        expectedShape
+      )
     ).toEqual(true);
   });
 
@@ -61,9 +62,9 @@ describe('Parse a MacOS Executor', () => {
   it('Should validate', () => {
     expect(
       ConfigParser.Validator.validateGenerable(
-        CircleCI.mapping.GenerableType.MACOS_EXECUTOR,
-        expectedShape,
-      ),
+        CircleCI.mapping.GenerableEnum.MACOS_EXECUTOR,
+        expectedShape
+      )
     ).toEqual(true);
   });
 
@@ -74,9 +75,9 @@ describe('Parse a MacOS Executor', () => {
   it('Should validate', () => {
     expect(
       ConfigParser.Validator.validateGenerable(
-        CircleCI.mapping.GenerableType.MACOS_EXECUTOR,
-        expectedShapeLarge,
-      ),
+        CircleCI.mapping.GenerableEnum.MACOS_EXECUTOR,
+        expectedShapeLarge
+      )
     ).toEqual(true);
   });
 
@@ -103,9 +104,9 @@ describe('Parse Windows Executor', () => {
   it('Should validate', () => {
     expect(
       ConfigParser.Validator.validateGenerable(
-        CircleCI.mapping.GenerableType.WINDOWS_EXECUTOR,
-        expectedShape,
-      ),
+        CircleCI.mapping.GenerableEnum.WINDOWS_EXECUTOR,
+        expectedShape
+      )
     ).toEqual(true);
   });
 
@@ -123,7 +124,7 @@ describe('Parse Windows Executor', () => {
 describe('Parse a 2xlarge Docker Executor', () => {
   const xxlDocker = new CircleCI.executors.DockerExecutor(
     'cimg/node:lts',
-    '2xlarge',
+    '2xlarge'
   );
   const expectedShape = {
     docker: [{ image: 'cimg/node:lts' }],
@@ -132,9 +133,9 @@ describe('Parse a 2xlarge Docker Executor', () => {
   it('Should validate', () => {
     expect(
       ConfigParser.Validator.validateGenerable(
-        CircleCI.mapping.GenerableType.DOCKER_EXECUTOR,
-        expectedShape,
-      ),
+        CircleCI.mapping.GenerableEnum.DOCKER_EXECUTOR,
+        expectedShape
+      )
     ).toEqual(true);
   });
 
@@ -159,15 +160,15 @@ describe('Parse a Large Machine Executor', () => {
   it('Should validate the large machine', () => {
     expect(
       ConfigParser.Validator.validateGenerable(
-        CircleCI.mapping.GenerableType.MACHINE_EXECUTOR,
-        expectedShapeLarge,
-      ),
+        CircleCI.mapping.GenerableEnum.MACHINE_EXECUTOR,
+        expectedShapeLarge
+      )
     ).toEqual(true);
   });
 
   it('Should parse the large machine', () => {
     expect(ConfigParser.parseExecutor(expectedShapeLarge)).toEqual(
-      machineLarge,
+      machineLarge
     );
   });
 });
@@ -183,15 +184,15 @@ describe('Parse a Medium Machine Executor', () => {
   it('Should validate the medium machine', () => {
     expect(
       ConfigParser.Validator.validateGenerable(
-        CircleCI.mapping.GenerableType.MACHINE_EXECUTOR,
-        expectedShapeMedium,
-      ),
+        CircleCI.mapping.GenerableEnum.MACHINE_EXECUTOR,
+        expectedShapeMedium
+      )
     ).toEqual(true);
   });
 
   it('Should parse the medium machine', () => {
     expect(ConfigParser.parseExecutor(expectedShapeMedium)).toEqual(
-      machineMedium,
+      machineMedium
     );
   });
 });
@@ -201,7 +202,7 @@ describe('Parse a Reusable Executor with Parameters', () => {
   const reusable = new CircleCI.reusable.ReusableExecutor(
     'default',
     machine,
-    new CircleCI.parameters.CustomParametersList(),
+    new CircleCI.parameters.CustomParametersList()
   );
   const expectedUsageShape = {
     executor: 'default',
@@ -231,15 +232,15 @@ describe('Parse a Reusable Executor with Parameters', () => {
     };
     expect(
       ConfigParser.Validator.validateGenerable(
-        CircleCI.mapping.GenerableType.REUSED_EXECUTOR,
-        expectedShapeless,
-      ),
+        CircleCI.mapping.GenerableEnum.REUSED_EXECUTOR,
+        expectedShapeless
+      )
     ).toEqual(true);
   });
 
   it('Should produce a config with executors', () => {
     expect(ConfigParser.parseReusableExecutors(executorsList)).toEqual(
-      myConfig.executors,
+      myConfig.executors
     );
   });
 });
@@ -249,11 +250,11 @@ describe('Validate Config with Reusable Executor', () => {
 
   const machine = new CircleCI.executors.MachineExecutor('large');
   const dockerBase = new CircleCI.executors.DockerExecutor(
-    'cimg/base:<< parameters.tag >>',
+    'cimg/base:<< parameters.tag >>'
   );
   const reusableMachine = new CircleCI.reusable.ReusableExecutor(
     'default',
-    machine,
+    machine
   );
 
   const reusableBase = dockerBase.toReusable('base');
@@ -266,20 +267,20 @@ describe('Validate Config with Reusable Executor', () => {
   it('Should validate reusable machine image', () => {
     expect(
       ConfigParser.Validator.validateGenerable(
-        CircleCI.mapping.GenerableType.REUSED_EXECUTOR,
+        CircleCI.mapping.GenerableEnum.REUSED_EXECUTOR,
         {
           executor: {
             name: 'default',
             version: '1.2.1',
           },
-        },
-      ),
+        }
+      )
     ).toEqual(true);
   });
   // TODO (this was previously commented out, before the migration)
   // it('Should not validate with undefined parameter', () => {
   //   expect(
-  //     CircleCI.Validator.validateGenerable(CircleCI.mapping.GenerableType.REUSABLE_EXECUTOR, {
+  //     CircleCI.Validator.validateGenerable(CircleCI.mapping.GenerableEnum.REUSABLE_EXECUTOR, {
   //       executor: {
   //         name: 'default',
   //       },
@@ -293,11 +294,11 @@ describe('', () => {
 
   const machine = new CircleCI.executors.MachineExecutor('large');
   const dockerBase = new CircleCI.executors.DockerExecutor(
-    'cimg/base:<< parameters.tag >>',
+    'cimg/base:<< parameters.tag >>'
   );
   const reusableMachine = new CircleCI.reusable.ReusableExecutor(
     'default',
-    machine,
+    machine
   );
 
   const reusableBase = dockerBase.toReusable('base');
@@ -311,29 +312,29 @@ describe('', () => {
   it('Should validate reusable base image shapeless', () => {
     expect(
       ConfigParser.Validator.validateGenerable(
-        CircleCI.mapping.GenerableType.REUSED_EXECUTOR,
-        reusedBase.generate(),
-      ),
+        CircleCI.mapping.GenerableEnum.REUSED_EXECUTOR,
+        reusedBase.generate()
+      )
     ).toEqual(true);
   });
 
   it('Should validate reusable base image', () => {
     expect(
       ConfigParser.Validator.validateGenerable(
-        CircleCI.mapping.GenerableType.REUSED_EXECUTOR,
+        CircleCI.mapping.GenerableEnum.REUSED_EXECUTOR,
         {
           executor: {
             name: 'base',
           },
-        },
-      ),
+        }
+      )
     ).toEqual(true);
   });
 });
 // TODO: Add strict parsing tests
 // it('Should not shapeless with required parameter', () => {
 //   expect(
-//     CircleCI.Validator.validateGenerable(CircleCI.mapping.GenerableType.REUSABLE_EXECUTOR, {
+//     CircleCI.Validator.validateGenerable(CircleCI.mapping.GenerableEnum.REUSABLE_EXECUTOR, {
 //       executor: 'default',
 //     }),
 //   ).not.toEqual(true);
@@ -341,7 +342,7 @@ describe('', () => {
 
 // it('Should not validate with improper parameter', () => {
 //   expect(
-//     CircleCI.Validator.validateGenerable(CircleCI.mapping.GenerableType.REUSABLE_EXECUTOR, {
+//     CircleCI.Validator.validateGenerable(CircleCI.mapping.GenerableEnum.REUSABLE_EXECUTOR, {
 //       executor: {
 //         name: 'default',
 //         version: 1.0,
@@ -352,7 +353,7 @@ describe('', () => {
 
 // it('Should not validate with undefined reusable executor', () => {
 //   expect(
-//     CircleCI.Validator.validateGenerable(CircleCI.mapping.GenerableType.REUSABLE_EXECUTOR, {
+//     CircleCI.Validator.validateGenerable(CircleCI.mapping.GenerableEnum.REUSABLE_EXECUTOR, {
 //       executor: {
 //         name: 'undefined',
 //       },

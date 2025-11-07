@@ -1,4 +1,4 @@
-import * as CircleCI from '@circleci/circleci-config-sdk';
+import * as CircleCI from '@ndelangen/circleci-config-sdk';
 import { parseGenerable, errorParsing } from '../../Config/exports/Parsing';
 import { parseOrbRef } from '../../Orb';
 import { parseSteps } from '../Commands';
@@ -35,13 +35,13 @@ export function parseWorkflowJob(
   name: string,
   workflowJobIn: unknown,
   jobs: CircleCI.Job[],
-  orbs?: CircleCI.orb.OrbImport[],
+  orbs?: CircleCI.orb.OrbImport[]
 ): CircleCI.workflow.WorkflowJobAbstract {
   return parseGenerable<
     UnknownWorkflowJobShape,
     CircleCI.workflow.WorkflowJobAbstract
   >(
-    CircleCI.mapping.GenerableType.WORKFLOW_JOB,
+    CircleCI.mapping.GenerableEnum.WORKFLOW_JOB,
     workflowJobIn,
     (workflowJobArgs) => {
       let args = workflowJobArgs;
@@ -89,14 +89,14 @@ export function parseWorkflowJob(
           job,
           parameters,
           parsedPresteps,
-          parsedPoststeps,
+          parsedPoststeps
         );
       }
 
       throw errorParsing(`Job ${name} not found in config`);
     },
     undefined,
-    name,
+    name
   );
 }
 
@@ -112,14 +112,14 @@ export function parseWorkflow(
   name: string,
   workflowIn: unknown,
   jobs: CircleCI.Job[],
-  orbs?: CircleCI.orb.OrbImport[],
+  orbs?: CircleCI.orb.OrbImport[]
 ): CircleCI.Workflow {
   return parseGenerable<
     UnknownWorkflowShape,
     CircleCI.Workflow,
     CircleCI.types.workflow.WorkflowDependencies
   >(
-    CircleCI.mapping.GenerableType.WORKFLOW,
+    CircleCI.mapping.GenerableEnum.WORKFLOW,
     workflowIn,
     (_, { jobList }) => new CircleCI.Workflow(name, jobList),
     (workflowArgs) => {
@@ -135,7 +135,7 @@ export function parseWorkflow(
 
       return { jobList };
     },
-    name,
+    name
   );
 }
 
@@ -149,12 +149,12 @@ export function parseWorkflow(
 export function parseWorkflowList(
   workflowsIn: unknown,
   jobs: CircleCI.Job[],
-  orbs?: CircleCI.orb.OrbImport[],
+  orbs?: CircleCI.orb.OrbImport[]
 ): CircleCI.Workflow[] {
   const workflowList = Object.entries(
     workflowsIn as {
       [name: string]: UnknownWorkflowShape;
-    },
+    }
   ).map(([name, workflow]) => parseWorkflow(name, workflow, jobs, orbs));
 
   return workflowList;

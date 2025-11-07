@@ -1,6 +1,7 @@
 import { parse } from 'yaml';
-import * as CircleCI from '@circleci/circleci-config-sdk';
-import * as ConfigParser from '../src/index';
+import * as CircleCI from '@ndelangen/circleci-config-sdk';
+import * as ConfigParser from '../index';
+import { expect, it, describe } from 'vitest';
 
 describe('Parse a "run" step', () => {
   const run = new CircleCI.commands.Run({
@@ -13,7 +14,7 @@ describe('Parse a "run" step', () => {
   });
 
   it('Should have the correct static properties', () => {
-    expect(run.generableType).toBe(CircleCI.mapping.GenerableType.RUN);
+    expect(run.generableType).toBe(CircleCI.mapping.GenerableEnum.RUN);
     expect(run.name).toBe('run');
   });
 });
@@ -31,14 +32,14 @@ describe('Parse a "checkout" step', () => {
       ConfigParser.parseSteps(
         parse(`steps:
     - checkout
-    `).steps,
-      ),
+    `).steps
+      )
     ).toEqual([checkout]);
   });
 
   it('Should parse and match example with provided path', () => {
     expect(ConfigParser.parseStep('checkout', { path: './src' })).toEqual(
-      checkoutWithPath,
+      checkoutWithPath
     );
   });
 });
@@ -54,8 +55,8 @@ describe('Parse a "setup_remote_docker" step', () => {
     expect(
       ConfigParser.parseStep(
         'setup_remote_docker',
-        srdResult.setup_remote_docker,
-      ),
+        srdResult.setup_remote_docker
+      )
     ).toEqual(srdExample);
   });
 });
@@ -71,7 +72,7 @@ describe('Parse a "restore_cache" step', () => {
   });
   it('Should parse and match example', () => {
     expect(
-      ConfigParser.parseStep('restore_cache', restoreExample.restore_cache),
+      ConfigParser.parseStep('restore_cache', restoreExample.restore_cache)
     ).toEqual(restore_cache);
   });
 });
@@ -89,7 +90,7 @@ describe('Parse a "save_cache" step', () => {
   });
   it('Should parse and match example', () => {
     expect(
-      ConfigParser.parseStep('save_cache', saveExample.save_cache),
+      ConfigParser.parseStep('save_cache', saveExample.save_cache)
     ).toEqual(save_cache);
   });
 });
@@ -107,7 +108,7 @@ describe('Parse a "store_artifacts" step', () => {
   };
   it('Should parse and match example', () => {
     expect(
-      ConfigParser.parseStep('store_artifacts', storeResult.store_artifacts),
+      ConfigParser.parseStep('store_artifacts', storeResult.store_artifacts)
     ).toEqual(storeExample);
   });
 });
@@ -119,7 +120,7 @@ describe('Parse "store_test_results" step', () => {
   });
   it('Should parse and match example', () => {
     expect(
-      ConfigParser.parseStep('store_test_results', example.store_test_results),
+      ConfigParser.parseStep('store_test_results', example.store_test_results)
     ).toEqual(storeTestResults);
   });
 });
@@ -135,7 +136,7 @@ describe('Parse a "add_ssh_keys" step', () => {
   });
   it('Should parse and match example', () => {
     expect(
-      ConfigParser.parseStep('add_ssh_keys', sshExample.add_ssh_keys),
+      ConfigParser.parseStep('add_ssh_keys', sshExample.add_ssh_keys)
     ).toEqual(addSSHKeys);
   });
 });
@@ -154,7 +155,7 @@ describe('Parse a Custom Command without parameters', () => {
   };
   it('Should parse and match example', () => {
     expect(
-      ConfigParser.parseReusableCommand('say_hello', example.say_hello),
+      ConfigParser.parseReusableCommand('say_hello', example.say_hello)
     ).toEqual(reusableCommand);
   });
 });
@@ -174,7 +175,7 @@ describe('Parse a Reusable command', () => {
 
   it('Should validate with the proper parameters', () => {
     const result = ConfigParser.Validator.validateGenerable(
-      CircleCI.mapping.GenerableType.STEP_LIST,
+      CircleCI.mapping.GenerableEnum.STEP_LIST,
       [
         {
           search_year: {
@@ -192,25 +193,31 @@ describe('Parse a Reusable command', () => {
             command: 'echo "Hello, World!"',
           },
         },
-      ],
+      ]
     );
     expect(result).toEqual(true);
   });
 });
 
 describe('Parse a "attach_workspace" command', () => {
-  const myExecutor = new CircleCI.executors.DockerExecutor('cimg/base:stable');
-  const attachWorkspace = new CircleCI.Job('attach to workspace', myExecutor, [
-    new CircleCI.commands.workspace.Attach({ at: '/tmp/workspace' }),
-  ]);
-  const attachExample = {
-    attach_workspace: {
-      at: '/tmp/workspace',
-    },
-  };
-  expect(
-    ConfigParser.parseStep('attach_workspace', attachExample.attach_workspace),
-  ).toEqual(attachWorkspace.steps[0]);
+  it('Should have the correct static properties', () => {
+    const myExecutor = new CircleCI.executors.DockerExecutor(
+      'cimg/base:stable'
+    );
+    const attachWorkspace = new CircleCI.Job(
+      'attach to workspace',
+      myExecutor,
+      [new CircleCI.commands.workspace.Attach({ at: '/tmp/workspace' })]
+    );
+    const attachExample = {
+      attach_workspace: {
+        at: '/tmp/workspace',
+      },
+    };
+    expect(
+      ConfigParser.parseStep('attach_workspace', attachExample.attach_workspace)
+    ).toEqual(attachWorkspace.steps[0]);
+  });
 });
 
 describe('Parse a "persist_to_workspace" command', () => {
@@ -223,7 +230,7 @@ describe('Parse a "persist_to_workspace" command', () => {
         root: 'workspace',
         paths: ['echo-output'],
       }),
-    ],
+    ]
   );
   const persistExample = {
     persist_to_workspace: {
@@ -235,8 +242,8 @@ describe('Parse a "persist_to_workspace" command', () => {
     expect(
       ConfigParser.parseStep(
         'persist_to_workspace',
-        persistExample.persist_to_workspace,
-      ),
+        persistExample.persist_to_workspace
+      )
     ).toEqual(persistWorkspace.steps[0]);
   });
 });

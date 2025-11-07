@@ -1,4 +1,4 @@
-import * as CircleCI from '@circleci/circleci-config-sdk';
+import * as CircleCI from '@ndelangen/circleci-config-sdk';
 import { ErrorObject, SchemaObject } from 'ajv';
 import { GenerableSubTypesMap } from './Mapping.types';
 
@@ -11,5 +11,5 @@ export type ValidationResult =
     };
 
 export type ValidationMap = GenerableSubTypesMap & {
-  [key in CircleCI.mapping.GenerableType]: SchemaObject;
+  [key in CircleCI.mapping.GenerableEnum]: SchemaObject;
 };

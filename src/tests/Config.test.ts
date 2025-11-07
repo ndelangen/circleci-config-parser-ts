@@ -1,10 +1,8 @@
 import { parse } from 'yaml';
-import * as CircleCI from '@circleci/circleci-config-sdk';
-import * as ConfigParser from '../src/index';
-import {
-  parseGenerable,
-  setLogParsing,
-} from '../src/lib/Config/exports/Parsing';
+import * as CircleCI from '@ndelangen/circleci-config-sdk';
+import * as ConfigParser from '../index';
+import { parseGenerable, setLogParsing } from '../lib/Config/exports/Parsing';
+import { describe, it, expect } from 'vitest';
 
 describe('Parse a CircleCI Config', () => {
   const myConfig = new CircleCI.Config(true);
@@ -19,7 +17,7 @@ describe('Parse a CircleCI Config', () => {
   it('Should be fully circular', () => {
     setLogParsing(true);
     expect(ConfigParser.parseConfig(parse(myConfig.stringify()))).toEqual(
-      myConfig,
+      myConfig
     );
     setLogParsing(false);
   });
@@ -31,9 +29,9 @@ describe('Parse a CircleCI Config', () => {
   it('Should throw error when parsing returns undefined', () => {
     expect(() => {
       parseGenerable(
-        CircleCI.mapping.GenerableType.CONFIG,
+        CircleCI.mapping.GenerableEnum.CONFIG,
         configResult,
-        () => undefined,
+        () => undefined
       );
     }).toThrowError();
   });

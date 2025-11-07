@@ -1,6 +1,7 @@
-import * as CircleCI from '@circleci/circleci-config-sdk';
+import * as CircleCI from '@ndelangen/circleci-config-sdk';
 import { parse } from 'yaml';
-import * as ConfigParser from '../src';
+import * as ConfigParser from '..';
+import { describe, it, expect } from 'vitest';
 import nodeInputManifest from './nodeManifest.json';
 
 describe('Use an OrbImport within a config', () => {
@@ -45,7 +46,7 @@ describe('Use an OrbImport within a config', () => {
     orbName,
     orbVersion,
     undefined,
-    manifest,
+    manifest
   );
 
   const exampleOrb2 = new CircleCI.orb.OrbImport(
@@ -54,7 +55,7 @@ describe('Use an OrbImport within a config', () => {
     orbName,
     '1.1.1',
     undefined,
-    manifest,
+    manifest
   );
 
   it('Should match expected shape', () => {
@@ -65,7 +66,7 @@ describe('Use an OrbImport within a config', () => {
 
   it('OrbImport should have static properties', () => {
     expect(exampleOrb.generableType).toBe(
-      CircleCI.mapping.GenerableType.ORB_IMPORT,
+      CircleCI.mapping.GenerableEnum.ORB_IMPORT
     );
   });
 
@@ -73,7 +74,7 @@ describe('Use an OrbImport within a config', () => {
     {
       'my-orb': `${orbNamespace}/${'my-orb'}@${orbVersion}`,
     },
-    manifest,
+    manifest
   );
 
   it('Should match expected shape', () => {
@@ -90,7 +91,7 @@ describe('Use an OrbImport within a config', () => {
     expect(
       orbJobRef
         ? new CircleCI.workflow.WorkflowJob(orbJobRef, jobParameters).generate()
-        : undefined,
+        : undefined
     ).toEqual(refShape);
   });
 
@@ -99,7 +100,7 @@ describe('Use an OrbImport within a config', () => {
     const jobParameters = { greeting: 'hi %user%' };
     const badJobRef = ConfigParser.parseOrbRef(
       { [jobName]: jobParameters },
-      'jobs',
+      'jobs'
     );
 
     expect(badJobRef).toEqual(undefined);
@@ -114,7 +115,7 @@ describe('Use an OrbImport within a config', () => {
     expect(sayHelloJob.parameters.parameters.length).toBe(1);
     expect(sayHelloJob.orb.name).toBe(orbName);
     expect(sayHelloJob.generableType).toBe(
-      CircleCI.mapping.GenerableType.ORB_REF,
+      CircleCI.mapping.GenerableEnum.ORB_REF
     );
   });
 
@@ -146,8 +147,8 @@ describe('Use an OrbImport within a config', () => {
         wfName,
         contents,
         [],
-        [exampleOrb],
-      ).generateContents(),
+        [exampleOrb]
+      ).generateContents()
     ).toEqual(contents);
   });
 
@@ -156,8 +157,8 @@ describe('Use an OrbImport within a config', () => {
       ConfigParser.parseExecutor(
         orbRefExecutor.generate(),
         [],
-        [exampleOrb],
-      ).generate(),
+        [exampleOrb]
+      ).generate()
     ).toEqual(orbRefExecutor.generate());
   });
 
@@ -167,8 +168,8 @@ describe('Use an OrbImport within a config', () => {
         'my-orb/say_it',
         orbRefCommand.generateContents(),
         [],
-        [exampleOrb],
-      ).generate(),
+        [exampleOrb]
+      ).generate()
     ).toEqual(orbRefCommand.generate());
   });
 
@@ -216,8 +217,8 @@ describe('Use an OrbImport within a config', () => {
       parse(
         ConfigParser.parseConfig(regenerated, {
           'my-orb': manifest,
-        }).stringify(),
-      ),
+        }).stringify()
+      )
     ).toEqual(regenerated);
   });
 });
@@ -235,7 +236,7 @@ describe('Use a Node orb within a config', () => {
     orbName,
     orbVersion,
     undefined,
-    nodeManifest,
+    nodeManifest
   );
 
   it('Should match expected shape', () => {
@@ -246,7 +247,7 @@ describe('Use a Node orb within a config', () => {
 
   it('OrbImport should have static properties', () => {
     expect(nodeOrb.generableType).toBe(
-      CircleCI.mapping.GenerableType.ORB_IMPORT,
+      CircleCI.mapping.GenerableEnum.ORB_IMPORT
     );
   });
 
@@ -254,7 +255,7 @@ describe('Use a Node orb within a config', () => {
     {
       node: `${orbNamespace}/${'node'}@${orbVersion}`,
     },
-    nodeManifest,
+    nodeManifest
   );
 
   it('Should match expected shape', () => {
@@ -271,7 +272,7 @@ describe('Use a Node orb within a config', () => {
     expect(
       orbJobRef
         ? new CircleCI.workflow.WorkflowJob(orbJobRef, jobParameters).generate()
-        : undefined,
+        : undefined
     ).toEqual(refShape);
   });
 
@@ -280,7 +281,7 @@ describe('Use a Node orb within a config', () => {
     const jobParameters = { greeting: 'hi %user%' };
     const badJobRef = ConfigParser.parseOrbRef(
       { [jobName]: jobParameters },
-      'jobs',
+      'jobs'
     );
 
     expect(badJobRef).toEqual(undefined);
@@ -323,8 +324,8 @@ describe('Use a Node orb within a config', () => {
         wfName,
         contents,
         [],
-        [nodeOrb],
-      ).generateContents(),
+        [nodeOrb]
+      ).generateContents()
     ).toEqual(contents);
   });
 
@@ -333,8 +334,8 @@ describe('Use a Node orb within a config', () => {
       ConfigParser.parseExecutor(
         orbRefExecutor.generate(),
         [],
-        [nodeOrb],
-      ).generate(),
+        [nodeOrb]
+      ).generate()
     ).toEqual(orbRefExecutor.generate());
   });
 
@@ -344,8 +345,8 @@ describe('Use a Node orb within a config', () => {
         'node/install-packages',
         orbRefCommand.generateContents(),
         [],
-        [nodeOrb],
-      ).generate(),
+        [nodeOrb]
+      ).generate()
     ).toEqual(orbRefCommand.generate());
   });
 
@@ -355,8 +356,8 @@ describe('Use a Node orb within a config', () => {
         'node/install-packages',
         undefined,
         [],
-        [nodeOrb],
-      ).generate(),
+        [nodeOrb]
+      ).generate()
     ).toEqual('node/install-packages');
   });
 
@@ -405,8 +406,8 @@ describe('Use a Node orb within a config', () => {
       parse(
         ConfigParser.parseConfig(regenerated, {
           node: nodeManifest,
-        }).stringify(),
-      ),
+        }).stringify()
+      )
     ).toEqual(regenerated);
   });
 });

@@ -1,4 +1,4 @@
-import * as CircleCI from '@circleci/circleci-config-sdk';
+import * as CircleCI from '@ndelangen/circleci-config-sdk';
 import { GenerableSubtypes, OneOrMoreGenerable } from '../types/Mapping.types';
 import { Validator } from './Validator';
 
@@ -13,15 +13,15 @@ export function parseGenerable<
     OneOrMoreGenerable | unknown
   > = never,
 >(
-  component: CircleCI.mapping.GenerableType,
+  component: CircleCI.mapping.GenerableEnum,
   input: unknown,
   parse: (
     args: InputShape,
-    children: GenerableDependencies,
+    children: GenerableDependencies
   ) => OutputGenerable | undefined,
   parseDependencies?: (args: InputShape) => GenerableDependencies,
   name?: string,
-  subtype?: GenerableSubtypes,
+  subtype?: GenerableSubtypes
 ): OutputGenerable {
   parseStack.push(`${component}${name ? `:${name}` : ''}`);
 
@@ -38,7 +38,7 @@ export function parseGenerable<
     const valid = Validator.validateGenerable(
       component,
       input || null,
-      subtype,
+      subtype
     );
 
     if (valid !== true) {

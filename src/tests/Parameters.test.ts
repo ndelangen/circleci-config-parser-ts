@@ -1,6 +1,7 @@
-import * as CircleCI from '@circleci/circleci-config-sdk';
+import * as CircleCI from '@ndelangen/circleci-config-sdk';
 import { parse as yamlParse } from 'yaml';
-import * as ConfigParser from '../src/index';
+import * as ConfigParser from '../index';
+import { describe, it, expect } from 'vitest';
 
 describe('Parse yaml pipeline parameters', () => {
   const parametersIn = yamlParse(`
@@ -12,27 +13,23 @@ describe('Parse yaml pipeline parameters', () => {
       type: integer
       default: 90`);
 
-  const expectedParameters =
-    new CircleCI.parameters.CustomParametersList<CircleCI.types.parameter.literals.PipelineParameterLiteral>(
-      [
-        new CircleCI.parameters.CustomEnumParameter(
-          'axis',
-          ['x', 'y', 'z'],
-          'x',
-        ),
-        new CircleCI.parameters.CustomParameter(
-          'angle',
-          CircleCI.mapping.ParameterSubtype.INTEGER,
-          90,
-        ),
-      ],
-    );
+  const expectedParameters = new CircleCI.parameters
+    .CustomParametersList<CircleCI.types.parameter.literals.PipelineParameterLiteral>(
+    [
+      new CircleCI.parameters.CustomEnumParameter('axis', ['x', 'y', 'z'], 'x'),
+      new CircleCI.parameters.CustomParameter(
+        'angle',
+        CircleCI.mapping.ParameterSubEnum.INTEGER,
+        90
+      ),
+    ]
+  );
 
   it('Should validate parameters', () => {
     const result = ConfigParser.Validator.validateGenerable(
-      CircleCI.mapping.GenerableType.CUSTOM_PARAMETERS_LIST,
+      CircleCI.mapping.GenerableEnum.CUSTOM_PARAMETERS_LIST,
       parametersIn,
-      CircleCI.mapping.ParameterizedComponent.PIPELINE,
+      CircleCI.mapping.ParameterizedComponentEnum.PIPELINE
     );
 
     expect(result).toEqual(true);
@@ -40,7 +37,7 @@ describe('Parse yaml pipeline parameters', () => {
 
   it('Should parse parameters', () => {
     expect(ConfigParser.parseParameterList(parametersIn)).toEqual(
-      expectedParameters,
+      expectedParameters
     );
   });
 
@@ -48,7 +45,7 @@ describe('Parse yaml pipeline parameters', () => {
     expect(() => {
       ConfigParser.parseParameterList(
         { invalid_parameter: {} },
-        CircleCI.mapping.ParameterizedComponent.JOB,
+        CircleCI.mapping.ParameterizedComponentEnum.JOB
       );
     }).toThrowError('Could not find valid parameter list in provided object');
   });
@@ -59,9 +56,9 @@ describe('Parse yaml pipeline parameters', () => {
     default: 2021`);
 
     const result = ConfigParser.Validator.validateGenerable(
-      CircleCI.mapping.GenerableType.CUSTOM_PARAMETER,
+      CircleCI.mapping.GenerableEnum.CUSTOM_PARAMETER,
       parameterIn,
-      CircleCI.mapping.ParameterizedComponent.PIPELINE,
+      CircleCI.mapping.ParameterizedComponentEnum.PIPELINE
     );
 
     expect(result).toEqual(true);
@@ -73,9 +70,9 @@ describe('Parse yaml pipeline parameters', () => {
     default: 1.01`);
 
     const result = ConfigParser.Validator.validateGenerable(
-      CircleCI.mapping.GenerableType.CUSTOM_PARAMETER,
+      CircleCI.mapping.GenerableEnum.CUSTOM_PARAMETER,
       parameterIn,
-      CircleCI.mapping.ParameterizedComponent.PIPELINE,
+      CircleCI.mapping.ParameterizedComponentEnum.PIPELINE
     );
 
     expect(result).not.toEqual(true);
@@ -92,27 +89,27 @@ describe('Parse yaml integer parameters', () => {
   const expectedParameter = new CircleCI.parameters.CustomParameter(
     parameterName,
     parameterType,
-    parameterValue,
+    parameterValue
   );
   [
-    CircleCI.mapping.ParameterSubtype.INTEGER,
-    CircleCI.mapping.ParameterizedComponent.PIPELINE,
-    CircleCI.mapping.ParameterizedComponent.JOB,
-    CircleCI.mapping.ParameterizedComponent.COMMAND,
-    CircleCI.mapping.ParameterizedComponent.EXECUTOR,
+    CircleCI.mapping.ParameterSubEnum.INTEGER,
+    CircleCI.mapping.ParameterizedComponentEnum.PIPELINE,
+    CircleCI.mapping.ParameterizedComponentEnum.JOB,
+    CircleCI.mapping.ParameterizedComponentEnum.COMMAND,
+    CircleCI.mapping.ParameterizedComponentEnum.EXECUTOR,
   ].map((subtype) =>
     it(`Should validate integer parameter with subtype ${subtype}`, () => {
       const result = ConfigParser.Validator.validateGenerable(
-        CircleCI.mapping.GenerableType.CUSTOM_PARAMETER,
+        CircleCI.mapping.GenerableEnum.CUSTOM_PARAMETER,
         parameterIn,
-        CircleCI.mapping.ParameterSubtype.INTEGER,
+        subtype
       );
       expect(result).toEqual(true);
-    }),
+    })
   );
   it('Should parse integer parameter', () => {
     expect(ConfigParser.parseParameter(parameterIn, parameterName)).toEqual(
-      expectedParameter,
+      expectedParameter
     );
   });
 
@@ -140,31 +137,31 @@ describe('Parse yaml string parameter and validate', () => {
   const expectedParameter = new CircleCI.parameters.CustomParameter(
     parameterName,
     parameterType,
-    parameterValue,
+    parameterValue
   );
 
   it('Should validate string parameter', () => {
     const result = ConfigParser.Validator.validateGenerable(
-      CircleCI.mapping.GenerableType.CUSTOM_PARAMETER,
+      CircleCI.mapping.GenerableEnum.CUSTOM_PARAMETER,
       parameterIn,
-      CircleCI.mapping.ParameterSubtype.STRING,
+      CircleCI.mapping.ParameterSubEnum.STRING
     );
 
     expect(result).toEqual(true);
   });
 
   [
-    CircleCI.mapping.ParameterSubtype.STRING,
-    CircleCI.mapping.ParameterizedComponent.PIPELINE,
-    CircleCI.mapping.ParameterizedComponent.JOB,
-    CircleCI.mapping.ParameterizedComponent.COMMAND,
-    CircleCI.mapping.ParameterizedComponent.EXECUTOR,
+    CircleCI.mapping.ParameterSubEnum.STRING,
+    CircleCI.mapping.ParameterizedComponentEnum.PIPELINE,
+    CircleCI.mapping.ParameterizedComponentEnum.JOB,
+    CircleCI.mapping.ParameterizedComponentEnum.COMMAND,
+    CircleCI.mapping.ParameterizedComponentEnum.EXECUTOR,
   ].map((subtype) =>
     it(`Should parse integer parameter with subtype ${subtype}`, () => {
       expect(ConfigParser.parseParameter(parameterIn, parameterName)).toEqual(
-        expectedParameter,
+        expectedParameter
       );
-    }),
+    })
   );
 });
 
@@ -178,29 +175,29 @@ describe('Parse yaml boolean parameter and validate', () => {
   const expectedParameter = new CircleCI.parameters.CustomParameter(
     parameterName,
     parameterType,
-    parameterValue,
+    parameterValue
   );
 
   [
-    CircleCI.mapping.ParameterSubtype.BOOLEAN,
-    CircleCI.mapping.ParameterizedComponent.PIPELINE,
-    CircleCI.mapping.ParameterizedComponent.JOB,
-    CircleCI.mapping.ParameterizedComponent.COMMAND,
+    CircleCI.mapping.ParameterSubEnum.BOOLEAN,
+    CircleCI.mapping.ParameterizedComponentEnum.PIPELINE,
+    CircleCI.mapping.ParameterizedComponentEnum.JOB,
+    CircleCI.mapping.ParameterizedComponentEnum.COMMAND,
   ].map((subtype) =>
     it(`Should validate boolean parameter with subtype ${subtype}`, () => {
       const result = ConfigParser.Validator.validateGenerable(
-        CircleCI.mapping.GenerableType.CUSTOM_PARAMETER,
+        CircleCI.mapping.GenerableEnum.CUSTOM_PARAMETER,
         parameterIn,
-        CircleCI.mapping.ParameterSubtype.BOOLEAN,
+        CircleCI.mapping.ParameterSubEnum.BOOLEAN
       );
 
       expect(result).toEqual(true);
-    }),
+    })
   );
 
   it(`Should parse boolean parameter`, () => {
     expect(ConfigParser.parseParameter(parameterIn, parameterName)).toEqual(
-      expectedParameter,
+      expectedParameter
     );
   });
 });
@@ -215,7 +212,7 @@ describe('Parse yaml enum parameter and validate', () => {
   const expectedParameter = new CircleCI.parameters.CustomEnumParameter(
     parameterName,
     parameterValues,
-    parameterValues[1],
+    parameterValues[1]
   );
 
   /**
@@ -225,27 +222,27 @@ describe('Parse yaml enum parameter and validate', () => {
   */
   [
     undefined,
-    CircleCI.mapping.ParameterizedComponent.PIPELINE,
-    CircleCI.mapping.ParameterizedComponent.JOB,
-    CircleCI.mapping.ParameterizedComponent.COMMAND,
-    CircleCI.mapping.ParameterizedComponent.EXECUTOR,
+    CircleCI.mapping.ParameterizedComponentEnum.PIPELINE,
+    CircleCI.mapping.ParameterizedComponentEnum.JOB,
+    CircleCI.mapping.ParameterizedComponentEnum.COMMAND,
+    CircleCI.mapping.ParameterizedComponentEnum.EXECUTOR,
   ].map((subtype) =>
     it(`Should validate env_var_name parameter with subtype ${subtype}`, () => {
       const result = ConfigParser.Validator.validateGenerable(
         subtype
-          ? CircleCI.mapping.GenerableType.CUSTOM_PARAMETER
-          : CircleCI.mapping.GenerableType.CUSTOM_ENUM_PARAMETER,
+          ? CircleCI.mapping.GenerableEnum.CUSTOM_PARAMETER
+          : CircleCI.mapping.GenerableEnum.CUSTOM_ENUM_PARAMETER,
         parameterIn,
-        subtype,
+        subtype
       );
 
       expect(result).toEqual(true);
-    }),
+    })
   );
 
   it(`Should parse enum parameter`, () => {
     expect(ConfigParser.parseParameter(parameterIn, parameterName)).toEqual(
-      expectedParameter,
+      expectedParameter
     );
   });
 });
@@ -260,28 +257,28 @@ describe('Parse yaml env_var_name parameter and validate', () => {
   const expectedParameter = new CircleCI.parameters.CustomParameter(
     parameterName,
     parameterType,
-    parameterValue,
+    parameterValue
   );
 
   [
-    CircleCI.mapping.ParameterSubtype.ENV_VAR_NAME, // this will can be assumed
-    CircleCI.mapping.ParameterizedComponent.JOB,
-    CircleCI.mapping.ParameterizedComponent.COMMAND,
+    CircleCI.mapping.ParameterSubEnum.ENV_VAR_NAME, // this will can be assumed
+    CircleCI.mapping.ParameterizedComponentEnum.JOB,
+    CircleCI.mapping.ParameterizedComponentEnum.COMMAND,
   ].map((subtype) =>
     it(`Should validate env_var_name parameter with subtype ${subtype}`, () => {
       const result = ConfigParser.Validator.validateGenerable(
-        CircleCI.mapping.GenerableType.CUSTOM_PARAMETER,
+        CircleCI.mapping.GenerableEnum.CUSTOM_PARAMETER,
         parameterIn,
-        subtype,
+        subtype
       );
 
       expect(result).toEqual(true);
-    }),
+    })
   );
 
   it(`Should parse env_var_name parameter`, () => {
     expect(ConfigParser.parseParameter(parameterIn, parameterName)).toEqual(
-      expectedParameter,
+      expectedParameter
     );
   });
 });
@@ -306,30 +303,30 @@ describe('Parse component parameters', () => {
 
   const reusableExecutor = new CircleCI.reusable.ReusableExecutor(
     'my-executor',
-    new CircleCI.executors.DockerExecutor('cimg/node:current'),
+    new CircleCI.executors.DockerExecutor('cimg/node:current')
   );
 
-  const expectedParameters =
-    new CircleCI.parameters.CustomParametersList<CircleCI.types.parameter.literals.JobParameterLiteral>(
-      [
-        new CircleCI.parameters.CustomParameter(
-          'override-executor',
-          CircleCI.mapping.ParameterSubtype.EXECUTOR,
-          reusableExecutor.name,
-        ),
-        new CircleCI.parameters.CustomParameter(
-          'extra-steps',
-          CircleCI.mapping.ParameterSubtype.STEPS,
-          [new CircleCI.commands.Run({ command: 'echo "hello world"' })],
-        ),
-      ],
-    );
+  const expectedParameters = new CircleCI.parameters
+    .CustomParametersList<CircleCI.types.parameter.literals.JobParameterLiteral>(
+    [
+      new CircleCI.parameters.CustomParameter(
+        'override-executor',
+        CircleCI.mapping.ParameterSubEnum.EXECUTOR,
+        reusableExecutor.name
+      ),
+      new CircleCI.parameters.CustomParameter(
+        'extra-steps',
+        CircleCI.mapping.ParameterSubEnum.STEPS,
+        [new CircleCI.commands.Run({ command: 'echo "hello world"' })]
+      ),
+    ]
+  );
 
   it('Should validate parameters', () => {
     const result = ConfigParser.Validator.validateGenerable(
-      CircleCI.mapping.GenerableType.CUSTOM_PARAMETERS_LIST,
+      CircleCI.mapping.GenerableEnum.CUSTOM_PARAMETERS_LIST,
       parametersIn,
-      CircleCI.mapping.ParameterizedComponent.JOB,
+      CircleCI.mapping.ParameterizedComponentEnum.JOB
     );
 
     expect(result).toEqual(true);
@@ -337,7 +334,7 @@ describe('Parse component parameters', () => {
 
   it('Should parse parameters', () => {
     expect(ConfigParser.parseParameterList(parametersIn)).toEqual(
-      expectedParameters,
+      expectedParameters
     );
   });
 
@@ -345,7 +342,7 @@ describe('Parse component parameters', () => {
     expect(() => {
       ConfigParser.parseParameterList(
         { invalid_parameter: {} },
-        CircleCI.mapping.ParameterizedComponent.JOB,
+        CircleCI.mapping.ParameterizedComponentEnum.JOB
       );
     }).toThrowError('Could not find valid parameter list in provided object');
   });
@@ -356,9 +353,9 @@ describe('Parse component parameters', () => {
     default: 2021`);
 
     const result = ConfigParser.Validator.validateGenerable(
-      CircleCI.mapping.GenerableType.CUSTOM_PARAMETER,
+      CircleCI.mapping.GenerableEnum.CUSTOM_PARAMETER,
       parameterIn,
-      CircleCI.mapping.ParameterizedComponent.PIPELINE,
+      CircleCI.mapping.ParameterizedComponentEnum.PIPELINE
     );
 
     expect(result).toEqual(true);
@@ -370,9 +367,9 @@ describe('Parse component parameters', () => {
     default: 1.01`);
 
     const result = ConfigParser.Validator.validateGenerable(
-      CircleCI.mapping.GenerableType.CUSTOM_PARAMETER,
+      CircleCI.mapping.GenerableEnum.CUSTOM_PARAMETER,
       parameterIn,
-      CircleCI.mapping.ParameterizedComponent.PIPELINE,
+      CircleCI.mapping.ParameterizedComponentEnum.PIPELINE
     );
 
     expect(result).not.toEqual(true);

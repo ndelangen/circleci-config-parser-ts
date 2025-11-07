@@ -1,5 +1,6 @@
-import * as CircleCI from '@circleci/circleci-config-sdk';
-import * as ConfigParser from '../src/index';
+import * as CircleCI from '@ndelangen/circleci-config-sdk';
+import * as ConfigParser from '../index';
+import { describe, it, expect } from 'vitest';
 
 describe('Parse a Docker Job', () => {
   const docker = new CircleCI.executors.DockerExecutor('cimg/node:lts');
@@ -30,7 +31,7 @@ describe('Parse Parameterized Docker Job', () => {
       new CircleCI.commands.Run({
         command: 'echo << parameters.greeting >>',
       }),
-    ],
+    ]
   );
 
   const jobIn = {
@@ -58,8 +59,8 @@ describe('Parse Parameterized Docker Job', () => {
 
   it('Can validate the job with a custom command step', () => {
     const result = ConfigParser.Validator.validateGenerable(
-      CircleCI.mapping.GenerableType.JOB,
-      jobIn,
+      CircleCI.mapping.GenerableEnum.JOB,
+      jobIn
     );
 
     expect(result).toEqual(true);
@@ -73,7 +74,7 @@ describe('Parse Parameterized Docker Job', () => {
   // });
   // it('Fail validation when command has not been added to config', () => {
   //   const validator = myConfig.getValidator();
-  //   const resultCommand = validator.validateGenerable(CircleCI.mapping.GenerableType.JOB, jobIn);
+  //   const resultCommand = validator.validateGenerable(CircleCI.mapping.GenerableEnum.JOB, jobIn);
 
   //   expect(resultCommand).not.toEqual(true);
   // });
@@ -93,7 +94,7 @@ describe('Parse Docker Job With A Parameterized Custom Command', () => {
   };
   // it('Can validate the job with a custom command step', () => {
   //   const validator = myConfig.getValidator();
-  //   const result = validator.validateGenerable(CircleCI.mapping.GenerableType.JOB, jobIn);
+  //   const result = validator.validateGenerable(CircleCI.mapping.GenerableEnum.JOB, jobIn);
 
   //   expect(result).toEqual(true);
   // });
@@ -107,7 +108,7 @@ describe('Parse Docker Job With A Parameterized Custom Command', () => {
       [helloWorld],
       new CircleCI.parameters.CustomParametersList([
         new CircleCI.parameters.CustomParameter('greeting', 'string'),
-      ]),
+      ])
     );
     const job = new CircleCI.Job('my_job', docker, [
       new CircleCI.reusable.ReusedCommand(reusableCommand, {
